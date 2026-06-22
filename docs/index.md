@@ -26,7 +26,7 @@ v1.7.2</strong></td>
 - [2. Résumé](#resume)
 - [3. Installation](#installation)
 - [4. Présentation](#presentation)
-- [5 Suivi des versions et documentation](#suivi-des-versions-et-documentation)
+- [5. Suivi des versions et documentation](#suivi-des-versions-et-documentation)
 
 
 
