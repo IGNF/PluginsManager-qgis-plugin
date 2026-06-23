@@ -7,7 +7,7 @@ name=IGN maitre
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
 description=Centralise et intègre les plugins IGN dans un menu et barres d'outils personnalisables pour un accès simplifié.
-version=1.7.2
+version=1.7.3
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 license=GNU AGPL v3
@@ -24,7 +24,7 @@ homepage=https://ignf.github.io/maitre-qgis-plugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog= Notification des dépendances manquantes
+changelog= v1.7.3 : Notification et installation des dépendances manquantes
     
 # Tags are comma separated with spaces allowed
 tags=python
