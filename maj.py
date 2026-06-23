@@ -16,8 +16,9 @@ from .mapping_version import *
 
 INSTALLATEUR = "PluginIGN_Installer"
 XML_RACINE = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
-PACKAGES = ["pefile"]
-PEFILE = "pefile-2024.8.26-py3-none-any.whl"
+PEFILE = ["pefile","pefile-2024.8.26-py3-none-any.whl"]
+DEFUSEDXML = ["defusedxml","defusedxml-0.7.1-py2.py3-none-any.whl"]
+PACKAGES = [PEFILE,DEFUSEDXML]
 
 def log(message,reset=False):
     """
@@ -34,6 +35,7 @@ def log(message,reset=False):
 
 class MajPlugins:
     def __init__(self,iface):
+        self.package_manquants = [] # liste de couples (nom complet, nom simplifié)
         self.iface = iface
         self.installateur = None
         self.plugins_xml = None
@@ -42,6 +44,10 @@ class MajPlugins:
         self.current_dir = os.path.dirname(__file__)
         self.parent_dir = os.path.dirname(self.current_dir)
         self.path_exe = list(Path(self.parent_dir).glob(f"*{INSTALLATEUR}.exe"))
+
+        prefix = Path(QgsApplication.prefixPath())
+        install_root = prefix.parent.parent
+        self.osgeo_bat = install_root / "OSGeo4W.bat"
 
     def download_file(self,type_file):
         url = None
@@ -270,58 +276,67 @@ class MajPlugins:
 
     def need_package(self):
         # test si les packages necessaires sont installés
-        self.package_manquants = ""
+        list_package_txt = "<br>"
         for package in PACKAGES:
             try:
-                importlib.import_module(package)
+                importlib.import_module(package[0]) # nom du module
             except ImportError:
-                self.package_manquants = package
-        #  tout est OK
+                self.package_manquants.append([package[0],package[1]]) # nom simplifié ET nom complet du module
+                list_package_txt += package[0]
+                list_package_txt += "<br>"
+
+                #  tout est OK
         if not self.package_manquants:
             return False
-        texte = "Le plugin Maître nécessite le package <span style='color:red;'>pefile</span><br><br>"
-        texte += "Voulez vous l'installer maintenant?"
+
+        texte = f"Les plugin IGN nécessitent les packages :<span style='color:red;'>{list_package_txt}</span><br><br>"
+        texte += "Voulez vous les installer maintenant?"
         reponse = QMessageBox.question(
             self.iface.mainWindow(),
             "Package manquant",
             texte,
             QMessageBox.Yes | QMessageBox.No,QMessageBox.Yes)
         if reponse == QMessageBox.Yes:
-            self.install_package()
+            if not self.isOSGeo4W_existe():
+                return False
+            texte = "L'installation va commencer, veuillez attendre le message de fin d'installation du package"
+            QMessageBox.information(self.iface.mainWindow(), "Installation du package", texte)
+            self.install_package(self.package_manquants)
+
             return True
         else:
-            texte = "package manquant : <span style='color:red;'>pefile</span><br>"
-            texte += "Si une mise à jour de *_PluginIGN_installer existe elle ne pourra pas s'installer"
+            texte = f"package manquant : <span style='color:red;'>{list_package_txt}</span><br>"
+            texte += "Certains plugins risquent de ne pas fonctionner"
             QMessageBox.warning(self.iface.mainWindow(),"Avertissement",texte)
         return True
 
-    def install_package(self):
-        prefix = Path(QgsApplication.prefixPath())
-        install_root = prefix.parent.parent
-        osgeo_bat = install_root / "OSGeo4W.bat"
-        if not osgeo_bat.exists():
-            log(f"Fichier batch introuvable : {osgeo_bat}")
-            text = f"Fichier batch introuvable : {osgeo_bat}\n"
-            text += f"Impossible d'installer le package pefile"
-            QMessageBox.critical(self.iface.mainWindow(),"Erreur",text)
-            return
+    def isOSGeo4W_existe(self):
+        if not self.osgeo_bat.exists():
+            log(f"Fichier batch introuvable : {self.osgeo_bat}")
+            text = f"Fichier batch introuvable : {self.osgeo_bat}\n"
+            text += f"Impossible de lancer l'installation"
+            QMessageBox.critical(self.iface.mainWindow(), "Erreur", text)
+            return False
+        return True
 
-        texte = "L'installation va commencer, veuillez attendre le message de fin d'installation du package"
-        QMessageBox.information(self.iface.mainWindow(), "Installation du package", texte)
-
+    def install_package(self,packages):
         plugin_dir = Path(os.path.dirname(__file__))
-        archive = Path(plugin_dir/"packages-requis"/PEFILE)
-        cmd = f'start "" cmd /c call "{osgeo_bat}" && pip install "{archive}" && exit'
-        result = subprocess.Popen(cmd, shell=True)
-        code = result.wait()
-        if code != 0:
-            log(f"L'installation du package a échoué")
-            QMessageBox.critical(self.iface.mainWindow(), "Erreur", f"L'installation du package a échoué (code {code})")
+        echec_package = "<br>"
+        for package in packages:
+            archive = Path(plugin_dir/"packages-requis"/package[1])
+            cmd = f'start "" cmd /c call "{self.osgeo_bat}" && pip install "{archive}" && exit'
+            result = subprocess.run(cmd, shell=True)
+
+            if result.returncode != 0:
+                echec_package += f"<br>{package[0]}"
+
+        if echec_package != "<br>":
+            QMessageBox.information(self.iface.mainWindow(),"echec",f"Echec de : <span style='color:red;'>{echec_package}</span>")
+
         else:
-            log(f"Package installé")
-            text = ("Packages installés !"
-                    "\nVeuillez fermer manuellement le shell qui vient de s'ouvrir")
-            QMessageBox.information(self.iface.mainWindow(), "Succès", text)
+            texte = "Tous les packages ont été installés<br>"
+            texte += f"Veuillez relancer QGIS et fermer toutes les fenetres shell"
+            QMessageBox.information(self.iface.mainWindow(),"Succès",texte)
 
 
 
