@@ -4,7 +4,7 @@ import importlib
 from pathlib import Path
 
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog,QTableWidgetItem
 from qgis.PyQt.uic import loadUi
 from qgis.core import QgsNetworkContentFetcher,QgsApplication
 from qgis.PyQt.QtCore  import QUrl
@@ -152,9 +152,16 @@ class MajPlugins:
         icon_path = Path(__file__).parent /"icons"/ "icon.png"
         self.dlgMaj.setWindowIcon(QIcon(str(icon_path)))
         self.dlgMaj.setWindowFlags(WindowCloseButtonHint)
-        self.dlgMaj.listWidget_maj.setSelectionMode(NoSelection)
-        self.dlgMaj.listWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.dlgMaj.setWindowTitle("Mise à jour disponible")
+
+        self.dlgMaj.tableWidget_maj.setSelectionMode(NoSelection)
+        self.dlgMaj.tableWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.dlgMaj.tableWidget_maj.setColumnCount(2)
+        self.dlgMaj.tableWidget_maj.setHorizontalHeaderLabels(["Plugin", "Version"])
+        self.dlgMaj.tableWidget_maj.setShowGrid(False)
+        self.dlgMaj.tableWidget_maj.verticalHeader().setDefaultSectionSize(15)
+
+
+        self.dlgMaj.setWindowTitle("Mises à jour ...")
         self.dlgMaj.pushButton_executer_installateur.clicked.connect(self.execute_installeur)
         self.dlgMaj.pushButton_fermer.clicked.connect(self.dlgMaj.close)# self.dlgMaj.exec()
 
@@ -170,9 +177,15 @@ class MajPlugins:
                 continue
             if version_local != version:
                 log(f"Mise à jour disponible pour {nom} : version locale : {version_local}, version disponible : {version}")
-                self.dlgMaj.listWidget_maj.addItem(nom)
+                # self.dlgMaj.listWidget_maj.addItem(nom)
+                self.dlgMaj.tableWidget_maj.insertRow(0)
+                item_version = QTableWidgetItem(version)
+                item_version.setTextAlignment(AlignCenter)
+                self.dlgMaj.tableWidget_maj.setItem(0, 0, QTableWidgetItem(nom))
+                self.dlgMaj.tableWidget_maj.setItem(0, 1, QTableWidgetItem(item_version))
                 is_maj = True
         if is_maj:
+            self.dlgMaj.tableWidget_maj.resizeColumnsToContents()
             self.dlgMaj.exec()
 
     def is_maj_installateur(self):

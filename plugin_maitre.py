@@ -109,7 +109,6 @@ def affichemessageAvertissement( titre, text):
         return True
     return None
 
-
 def afficheDoc():
     webbrowser.open("https://ignf.github.io/maitre-qgis-plugin/")
 
@@ -176,18 +175,18 @@ class PluginMaitre:
 
         # ************************************************************************
         # menu "Requêtes"
-        self.menu_requete = QMenu("Requêtes", self.iface.mainWindow())
-        self.menu.addMenu(self.menu_requete)
-        requete = QAction("Lancer une requêtes", self.iface.mainWindow())
-        requete.triggered.connect(self.on_requete)
-        self.menu_requete.addAction(requete)
-        # # action dans le sous-menu
-        # requete_unique = QAction("Lancer une requêtes unique", self.iface.mainWindow())
-        # requete_unique.triggered.connect(self.on_requete_unique)
-        # requete_enchaine = QAction("Lancer une requêtes enchainées", self.iface.mainWindow())
-        # requete_enchaine.triggered.connect(self.on_requete_enchaine)
-        # self.menu_requete.addAction(requete_unique)
-        # self.menu_requete.addAction(requete_enchaine)
+        # self.menu_requete = QMenu("Requêtes", self.iface.mainWindow())
+        # self.menu.addMenu(self.menu_requete)
+        # requete = QAction("Lancer une requêtes", self.iface.mainWindow())
+        # requete.triggered.connect(self.on_requete)
+        # self.menu_requete.addAction(requete)
+        # # # action dans le sous-menu
+        # # requete_unique = QAction("Lancer une requêtes unique", self.iface.mainWindow())
+        # # requete_unique.triggered.connect(self.on_requete_unique)
+        # # requete_enchaine = QAction("Lancer une requêtes enchainées", self.iface.mainWindow())
+        # # requete_enchaine.triggered.connect(self.on_requete_enchaine)
+        # # self.menu_requete.addAction(requete_unique)
+        # # self.menu_requete.addAction(requete_enchaine)
         self.menu.addSeparator()
 
         # ************************************************************************
