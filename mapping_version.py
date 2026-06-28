@@ -18,6 +18,7 @@ try :
     YesRole = QMessageBox.ButtonRole.YesRole
     AcceptRole = QMessageBox.ButtonRole.AcceptRole
     NoSelection = QAbstractItemView.SelectionMode.NoSelection
+    AlignCenter = Qt.AlignmentFlag.AlignCenter
 # QT5
 except :
     Dialog = Qt.Dialog
@@ -35,3 +36,4 @@ except :
     YesRole = QMessageBox.YesRole
     AcceptRole = QMessageBox.AcceptRole
     NoSelection = QListWidget.NoSelection
+    AlignCenter = Qt.AlignCenter

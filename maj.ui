@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>308</width>
-    <height>186</height>
+    <width>344</width>
+    <height>273</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,23 +16,6 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Mise à jour disponibles :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QListWidget" name="listWidget_maj"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="pushButton_executer_installateur">
-       <property name="text">
-        <string>Lancer le gestionaire de mise à jour</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="pushButton_fermer">
        <property name="sizePolicy">
@@ -43,6 +26,23 @@
        </property>
        <property name="text">
         <string>Fermer</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QTableWidget" name="tableWidget_maj"/>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Mises à jour disponibles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pushButton_executer_installateur">
+       <property name="text">
+        <string>Lancer le gestionaire de mise à jour</string>
        </property>
       </widget>
      </item>
