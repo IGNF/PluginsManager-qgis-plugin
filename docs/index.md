@@ -9,7 +9,7 @@
 style="width:1.38681in;height:1.47153in"
 alt="logo_IGN_pour_lettre" /></td>
 <td style="text-align: center;font-size: 24px;"><strong>Plugin Maitre
-v1.7.4</strong></td>
+v1.7.5</strong></td>
 </tr>
 <tr>
 <td style="font-size: 16px;text-align: center;">Développeur  : Gérôme PECHEUR (IGN)</td>

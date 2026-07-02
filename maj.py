@@ -17,8 +17,9 @@ from .mapping_version import *
 INSTALLATEUR = "PluginIGN_Installer"
 XML_RACINE = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
 PEFILE = ["pefile","pefile-2024.8.26-py3-none-any.whl"]
-DEFUSEDXML = ["defusedxml","defusedxml-0.7.1-py2.py3-none-any.whl"]
-PACKAGES = [PEFILE,DEFUSEDXML]
+# DEFUSEDXML = ["defusedxml","defusedxml-0.7.1-py2.py3-none-any.whl"]
+# PACKAGES = [PEFILE,DEFUSEDXML]
+PACKAGES = [PEFILE]
 
 def log(message,reset=False):
     """
