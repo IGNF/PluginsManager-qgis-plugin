@@ -1,5 +1,5 @@
 import os
-import subprocess
+import subprocess # nosec B404
 import importlib
 from pathlib import Path
 
@@ -10,7 +10,7 @@ from qgis.core import QgsNetworkContentFetcher,QgsApplication
 from qgis.PyQt.QtCore  import QUrl
 from zipfile import ZipFile
 import requests
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET # nosec B405
 
 from .mapping_version import *
 
@@ -127,7 +127,7 @@ class MajPlugins:
             return
 
     def getplugin_from_xml(self,tmp_xml,all = False):
-        tree = ET.parse(tmp_xml)
+        tree = ET.parse(tmp_xml) # nosec B314
         root = tree.getroot()
         list_tmp = ""
         dico_plugin = {}
@@ -248,7 +248,7 @@ class MajPlugins:
 
     def download_exe(self, url, destination):
         try:
-            response = requests.get(url, stream=True)
+            response = requests.get(url, stream=True,timeout=30)
             response.raise_for_status()
             with open(destination, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
@@ -279,10 +279,10 @@ class MajPlugins:
         try:
             if getattr(self, "dlgMaj", None):
                 self.dlgMaj.close()
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
         try:
-            subprocess.Popen([str(self.path_exe[0])], cwd=str(self.parent_dir))
+            subprocess.Popen([str(self.path_exe[0])], cwd=str(self.parent_dir)) # nosec B603
         except Exception as e:
             text = (f"Le programme de mise à jour est introuvable :"
                     f"Veuillez lancer l'installateur fournit (*_{INSTALLATEUR}.exe)")
@@ -338,20 +338,13 @@ class MajPlugins:
         echec_package = "<br>"
         for package in packages:
             archive = Path(plugin_dir/"packages-requis"/package[1])
-            # cmd = f'start "" cmd /c call "{self.osgeo_bat}" && pip install "{archive}" && exit'
-            # result = subprocess.run(cmd, shell=True)
-            result = subprocess.run(
-                [
-                    "cmd.exe",
-                    "/c",
-                    "call",
-                    self.osgeo_bat,
-                    "&&",
-                    "pip",
-                    "install",
-                    archive
-                ]
-            )
+
+            cmd = [
+                "cmd.exe",
+                "/c",
+                f'call {self.osgeo_bat} && python -m pip install {archive}'
+            ]
+            result = subprocess.run(cmd, capture_output=True,text=True,encoding="cp850") # nosec B603
 
             if result.returncode != 0:
                 echec_package += f"<br>{package[0]}"
@@ -361,7 +354,7 @@ class MajPlugins:
 
         else:
             texte = "Tous les packages ont été installés<br>"
-            texte += f"Veuillez relancer QGIS et fermer toutes les fenetres shell"
+            texte += f"Veuillez relancer QGIS"
             QMessageBox.information(self.iface.mainWindow(),"Succès",texte)
 
 

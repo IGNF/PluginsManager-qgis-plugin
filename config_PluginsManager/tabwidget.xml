@@ -1,2 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<tabwidget><onglet id="menu IGN " /></tabwidget>
+<tabwidget>
+    <onglet id="menu IGN " />
+    <onglet id="test">
+        <plugin>IGN_assistant-dfci</plugin>
+        <plugin>IGN_assistant-hydro-DDT65</plugin>
+    </onglet>
+</tabwidget>
