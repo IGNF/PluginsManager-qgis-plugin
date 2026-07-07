@@ -29,7 +29,7 @@ def log(message,reset=False):
     current_directory = os.path.dirname(__file__)
     # Remonter d'un niveau
     parent_directory = os.path.abspath(Path(current_directory, os.pardir))
-    fichier = Path(parent_directory, "log_maitre.txt")
+    fichier = Path(parent_directory, "log_PluginsManager.txt")
     mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
     with open(fichier, mode, encoding="utf-8") as f:
         f.write(f"{message}\n")
@@ -338,8 +338,20 @@ class MajPlugins:
         echec_package = "<br>"
         for package in packages:
             archive = Path(plugin_dir/"packages-requis"/package[1])
-            cmd = f'start "" cmd /c call "{self.osgeo_bat}" && pip install "{archive}" && exit'
-            result = subprocess.run(cmd, shell=True)
+            # cmd = f'start "" cmd /c call "{self.osgeo_bat}" && pip install "{archive}" && exit'
+            # result = subprocess.run(cmd, shell=True)
+            result = subprocess.run(
+                [
+                    "cmd.exe",
+                    "/c",
+                    "call",
+                    self.osgeo_bat,
+                    "&&",
+                    "pip",
+                    "install",
+                    archive
+                ]
+            )
 
             if result.returncode != 0:
                 echec_package += f"<br>{package[0]}"
