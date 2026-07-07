@@ -34,10 +34,10 @@ from .mapping_version import *
 from .add_onglet import *
 from .plugin_maitre_dialog import PluginMaitreDialog
 
-TITRE = "Maître"
+TITRE = "PluginsManager"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
-DOSSIER_ONGLET = "config_plugin_maitre"
+DOSSIER_ONGLET = "config_PluginsManager"
 # liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
 # EXCEPT_PLUGIN = ["IGN_Vues"]
 EXCEPT_PLUGIN = [""]
@@ -75,7 +75,7 @@ def log(message,reset=False):
     current_directory = os.path.dirname(__file__)
     # Remonter d'un niveau
     parent_directory = os.path.abspath(Path(current_directory, os.pardir))
-    fichier = Path(parent_directory, "log_maitre.txt")
+    fichier = Path(parent_directory, "log_PluginsManager.txt")
     mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
     with open(fichier, mode, encoding="utf-8") as f:
         f.write(f"{message}\n")
@@ -110,7 +110,7 @@ def affichemessageAvertissement( titre, text):
     return None
 
 def afficheDoc():
-    webbrowser.open("https://ignf.github.io/maitre-qgis-plugin/")
+    webbrowser.open("https://ignf.github.io/PluginsManager-qgis-plugin/")
 
 class PluginMaitre:
     def __init__(self, iface):
@@ -167,7 +167,7 @@ class PluginMaitre:
         parent_directory = os.path.abspath(Path(current_directory, os.pardir))
 
         # ************************************************************************
-        # plugin maitre
+        # plugin PluginsManager
         icon_path = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
         action = QAction(QIcon(str(icon_path)),"Configuration",self.iface.mainWindow())
         action.triggered.connect(self.run)

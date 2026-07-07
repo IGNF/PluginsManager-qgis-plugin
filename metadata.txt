@@ -3,20 +3,20 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=IGN maitre
+name=IGN PluginsManager
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
-description=Centralise et intègre les plugins IGN dans un menu et barres d'outils personnalisables pour un accès simplifié.
-version=1.7.5
+description=This plugin centralizes and organizes IGN plugins into customizable menus and toolbars, making them easier to access and improving the overall user experience. IGN plugins are prefixed with "IGN_".
+version=1.8.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 license=GNU AGPL v3
 
-about=Ce plugin centralise et organise les plugins IGN dans des menus et barres d’outils personnalisables, facilitant leur accès et améliorant l’ergonomie globale. Les plugins IGN sont préfixés par «IGN_».
+about=This plugin centralizes and organizes IGN plugins into customizable menus and toolbars, making them easier to access and improving the overall user experience. IGN plugins are prefixed with "IGN_".
 
-tracker=https://github.com/IGNF/maitre-qgis-plugin/issues
-repository=https://github.com/IGNF/maitre-qgis-plugin
-homepage=https://ignf.github.io/maitre-qgis-plugin/
+tracker=https://github.com/IGNF/PluginsManager-qgis-plugin/issues
+repository=https://github.com/IGNF/PluginsManager-qgis-plugin
+homepage=https://ignf.github.io/PluginsManager-qgis-plugin/
 
 # End of mandatory metadata
 
@@ -24,7 +24,8 @@ homepage=https://ignf.github.io/maitre-qgis-plugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog= v1.7.3 : Notification et installation des dépendances manquantes
+changelog=  v1.8.0 : Changement de nom
+            v1.7.3 : Notification et installation des dépendances manquantes
     
 # Tags are comma separated with spaces allowed
 tags=python
