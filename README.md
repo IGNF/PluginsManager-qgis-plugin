@@ -1,8 +1,8 @@
 
 
-# MAITRE
+# PluginsManager
 
-"Maitre" is a plugin that manages the integration of plugins prefixed _IGN into a menu and/or toolbars.
+"PluginsManager" is a plugin that manages the integration of plugins prefixed _IGN into a menu and/or toolbars.
 
 
 ## Fonctionnalités
@@ -22,11 +22,11 @@ English :
 
 - Mainteneur principal : gerome.pecheur@ign.fr
 - Organisation : [IGNF](https://github.com/IGNF)
-- Issues GitHub : https://github.com/IGNF/maitre-qgis-plugin/issues
+- Issues GitHub : https://github.com/IGNF/PluginsManager-qgis-plugin/issues
 
 ## Ressources
 
-User documentation : https://ignf.github.io/maitre-qgis-plugin/
+User documentation : https://ignf.github.io/PluginsManager-qgis-plugin/
 
 
 ## Licence
