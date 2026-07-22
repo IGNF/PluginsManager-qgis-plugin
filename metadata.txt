@@ -7,7 +7,7 @@ name=IGN PluginsManager
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
 description=This plugin centralizes and organizes IGN plugins into customizable menus and toolbars, making them easier to access and improving the overall user experience. IGN plugins are prefixed with "IGN_".
-version=1.8.0
+version=2.0.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 license=GNU AGPL v3
@@ -24,7 +24,8 @@ homepage=https://ignf.github.io/PluginsManager-qgis-plugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=  v1.8.0 : Changement de nom
+changelog=  v2.0.0 : Installation des plugins IGN depuis le dépôt officiel si disponible, depuis Github sinon.
+            v1.8.0 : Changement de nom
             v1.7.3 : Notification et installation des dépendances manquantes
     
 # Tags are comma separated with spaces allowed
