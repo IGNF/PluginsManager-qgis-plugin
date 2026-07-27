@@ -5,6 +5,7 @@ from qgis.PyQt.uic import loadUi
 
 from .fonctions import *
 from .plugins_ign import *
+from.progressbar import DownloadProgress
 
 class InstallerDialog(QDialog):
     def __init__(self,parent = None):
@@ -36,12 +37,13 @@ class InstallerDialog(QDialog):
         self.tablePlugins.horizontalHeader().setStyleSheet(
             "QHeaderView::section { color: white; background-color: #00a108; font-weight: bold; }")
         self.tablePlugins.setSelectionMode(NoSelection)
-        self.tablePlugins.setColumnCount(4)
-        self.tablePlugins.setHorizontalHeaderLabels(["Plugins disponibles", "Version disponible","Version installée", "Description"])
+        self.tablePlugins.setColumnCount(5)
+        self.tablePlugins.setHorizontalHeaderLabels(["Plugins disponibles","Dépôt", "Version disponible","Version installée", "Description"])
         self.tablePlugins.setColumnWidth(0, 220)
-        self.tablePlugins.setColumnWidth(1, 130)
-        self.tablePlugins.setColumnWidth(2, 120)
-        self.tablePlugins.setColumnWidth(3, 350)
+        self.tablePlugins.setColumnWidth(1, 150)
+        self.tablePlugins.setColumnWidth(2, 130)
+        self.tablePlugins.setColumnWidth(3, 120)
+        self.tablePlugins.setColumnWidth(4, 350)
         self.tablePlugins.horizontalHeader().setStretchLastSection(True)
 
         self.tablePlugins.verticalHeader().setMinimumSectionSize(1)
@@ -68,19 +70,28 @@ class InstallerDialog(QDialog):
                 item_name.setData(Qt.UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
                 self.tablePlugins.setItem(ligne, 0, item_name)
 
+                # DEPOT
+                nom_depot = ""
+                if depot == "officiel":
+                    nom_depot = "Dépôt officiel (qgis.org)"
+                elif depot == "github":
+                    nom_depot = "GitHub"
+                item_depot = self.creer_item(nom_depot)
+                self.tablePlugins.setItem(ligne, 1, item_depot)
+
                 # VERSION DISPONIBLE
                 item_version_dispo = self.creer_item(version)
                 if version_installe != version:
                     item_version_dispo.setBackground(QBrush(QColor(COLOR_MAJ)))
-                self.tablePlugins.setItem(ligne, 1, item_version_dispo)
+                self.tablePlugins.setItem(ligne, 2, item_version_dispo)
 
                 # VERSION INSTALLÉE
                 item_version_installe = self.creer_item(version_installe)
-                self.tablePlugins.setItem(ligne, 2, item_version_installe)
+                self.tablePlugins.setItem(ligne, 3, item_version_installe)
 
                 # DESCRIPTION
                 item_descr = self.creer_item(description)
-                self.tablePlugins.setItem(ligne, 3, item_descr)
+                self.tablePlugins.setItem(ligne, 4, item_descr)
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
@@ -136,10 +147,14 @@ class InstallerDialog(QDialog):
             QMessageBox.Yes
         )
         if reponse == QMessageBox.No:
-            return
+            return None
         list_plugin_to_install = self.get_plugins_checked()
+        if len(list_plugin_to_install) == 0:
+            return None
         print(f"Plugins à installer : {list_plugin_to_install}")
-        for plugin in list_plugin_to_install:
+        progress = DownloadProgress(self, len(list_plugin_to_install))
+        for idx,plugin in enumerate(list_plugin_to_install,start = 1):
+            progress.update(idx, f"Téléchargement de : {plugin["name"]}")
             # téléchargement des plugins sous forme de bytes
             plugins_bytes = self.pluginsIGN.download_plugins(plugin['download_url'])
 
@@ -154,6 +169,11 @@ class InstallerDialog(QDialog):
 
             # extraction du zip
             self.pluginsIGN.extract_zip(parent_directory,chemin_zip)
+
+        text = ("Installation terminé\n\n - Veuillez redémarrer QGIS pour prendre\n"
+                "en compte les plugins")
+        QMessageBox.information(self, "Installateur de plugins", text)
+        return progress
 
 
 

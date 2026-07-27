@@ -2,19 +2,22 @@
 
 # PluginsManager
 
-"PluginsManager" is a plugin that manages the integration of plugins prefixed _IGN into a menu and/or toolbars.
+IGN plugin manager for QGIS allowing the installation, update and organization of IGN extensions.  
+It detects IGN plugins (prefixed with "IGN_"), notifies users of available updates and facilitates their integration into customizable toolbars and the IGN menu.
 
 
 ## Fonctionnalités
 
-French : 
-* Gestion de l'intégration des plugins IGN dans un menu et dans des barres d'outils.
-* Centralisation de toutes les documentations des plugins IGN
-* detection de la présence de mises à jour des plugins IGN
+French :  
+* Installer les plugins IGN depuis les dépôts disponibles (qgis.org ou GitHub).
+* Organiser les plugins IGN dans un menu IGN et des barres d’outils personnalisables selon les besoins des utilisateurs.
+* Centralisation de toutes les documentations des plugins IGN.
+* detection de la présence de mises à jour des plugins IGN.
 
 
 English :
-* Management of the integration of IGN plugins into a menu and toolbars.
+* Install IGN plugins from available repositories (qgis.org or GitHub)
+* Organize IGN plugins into IGN menu and customizable toolbars according to user needs
 * Centralization of all IGN plugin documentation
 * Detection of available updates for IGN plugins
 

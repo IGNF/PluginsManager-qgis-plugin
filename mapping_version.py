@@ -7,6 +7,7 @@ try :
     WindowCloseButtonHint = Qt.WindowType.WindowCloseButtonHint
     WindowTitleHint = Qt.WindowType.WindowTitleHint
     WindowStaysOnTopHint = Qt.WindowType.WindowStaysOnTopHint
+    WindowModal = Qt.WindowModality.WindowModal
     Checked = Qt.CheckState.Checked
     Unchecked = Qt.CheckState.Unchecked
     ItemIsEnabled = Qt.ItemFlag.ItemIsEnabled
@@ -26,6 +27,7 @@ except :
     WindowCloseButtonHint = Qt.WindowCloseButtonHint
     WindowTitleHint = Qt.WindowTitleHint
     WindowStaysOnTopHint = Qt.WindowStaysOnTopHint
+    WindowModal = Qt.WindowModal
     Checked = Qt.Checked
     Unchecked = Qt.Unchecked
     ItemIsEnabled = Qt.ItemIsEnabled

@@ -36,7 +36,7 @@ class PluginMaitre:
     def __init__(self, iface):
 
 
-        log("Initialisation du plugin maître",reset=True)
+        log(f"Initialisation de : {TITRE}",reset=True)
 
         self.path_xml = None
         self.toolbar = None
