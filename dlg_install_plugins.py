@@ -142,12 +142,6 @@ class InstallerDialog(QDialog):
         return plugins_checked
 
     def on_installe_plugin(self):
-        reponse = QMessageBox.question(self,"Installation","Voulez-vous installer les plugins sélectionnés ?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes
-        )
-        if reponse == QMessageBox.No:
-            return None
         list_plugin_to_install = self.get_plugins_checked()
         if len(list_plugin_to_install) == 0:
             return None
@@ -158,7 +152,7 @@ class InstallerDialog(QDialog):
             # téléchargement des plugins sous forme de bytes
             plugins_bytes = self.pluginsIGN.download_plugins(plugin['download_url'])
 
-            # ecriture physique du zip
+            # écriture physique du zip
             current_directory = os.path.dirname(__file__)
             # Remonter d'un niveau
             parent_directory = os.path.abspath(Path(current_directory, os.pardir))
