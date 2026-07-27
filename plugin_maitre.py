@@ -149,17 +149,9 @@ class PluginMaitre:
                 action = QAction(QIcon(str(icon_path)),plugincoche,self.iface.mainWindow())
                 action.triggered.connect(lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
                 self.menu.addAction(action)
-        # ************************************************************************
-
-        # ************************************************************************
-        # verif maj
         self.menu.addSeparator()
-        action = QAction("Vérifiez la mise à jour des plugins", self.iface.mainWindow())
-        # action.triggered.connect(self.maj.execute_installeur)
-        self.menu.addAction(action)
+        # ************************************************************************
 
-        menuBar = self.iface.mainWindow().menuBar()
-        menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
 
         # ************************************************************************
         # Aide
@@ -167,6 +159,10 @@ class PluginMaitre:
         action = QAction(QIcon(str(icon_path)), "Aide", self.iface.mainWindow())
         action.triggered.connect(self.apropos)
         self.menu.addAction(action)
+
+        # *********************************************
+        menuBar = self.iface.mainWindow().menuBar()
+        menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
 
     def get_lien_doc_from_metadata(self, plugin):
         plugins_dir = os.path.join(QgsApplication.qgisSettingsDirPath(),"python","plugins")
@@ -548,9 +544,6 @@ class PluginMaitre:
             loadUi(ui_file, self.dlgaddonglet)
             self.dlgaddonglet.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
             self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
-
-            # a propos...
-            self.dlg.pushButton_apropos.clicked.connect(self.apropos)
 
             # bouton actualiser la toolbar
             self.dlg.pushButtonActualiser.clicked.connect(self.actualiser)
