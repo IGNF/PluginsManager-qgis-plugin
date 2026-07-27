@@ -10,6 +10,7 @@ try :
     Checked = Qt.CheckState.Checked
     Unchecked = Qt.CheckState.Unchecked
     ItemIsEnabled = Qt.ItemFlag.ItemIsEnabled
+    ItemIsEditable = Qt.ItemFlag.ItemIsEditable
     ItemIsUserCheckable = Qt.ItemFlag.ItemIsUserCheckable
     MatchExactly = Qt.MatchFlag.MatchExactly
     RightSide = QTabBar.ButtonPosition.RightSide
@@ -28,6 +29,7 @@ except :
     Checked = Qt.Checked
     Unchecked = Qt.Unchecked
     ItemIsEnabled = Qt.ItemIsEnabled
+    ItemIsEditable = Qt.ItemIsEditable
     ItemIsUserCheckable = Qt.ItemIsUserCheckable
     MatchExactly = Qt.MatchFlag.MatchExactly
     RightSide = QTabBar.RightSide

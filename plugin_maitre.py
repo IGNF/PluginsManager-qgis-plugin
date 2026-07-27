@@ -24,96 +24,17 @@
 
 import os.path
 import qgis
-import webbrowser
 
 from qgis.PyQt.QtWidgets import QInputDialog, QLabel,QAction,QListWidgetItem,QMenu
 from qgis.utils import plugins
 
 from .maj import *
-from .mapping_version import *
-from .add_onglet import *
-from .plugin_maitre_dialog import PluginMaitreDialog
+from .dlg_install_plugins import *
 
-TITRE = "PluginsManager"
-MENU_IGN = "menu IGN "
-PREFIXE_PLUGIN_IGN = "IGN_"
-DOSSIER_ONGLET = "config_PluginsManager"
-# liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
-# EXCEPT_PLUGIN = ["IGN_Vues"]
-EXCEPT_PLUGIN = [""]
-
-# 0 : bouton "actualiser/sauvegarder"
-# 1 : titre des barres d'outils
-# 2 : tabwidget
-CUSTOM_WIDGETS = (
-    "background-color: #21d847; font-weight: bold;",
-    """
-    QLabel {background-color: #a9ffa1;font-weight: bold;border: 2px solid #4CAF50;
-        border-radius: 8px;
-    }
-    QLabel:hover {background-color: #70e070;color: #000000}
-    """,
-    """
-    QTabWidget {
-    background-color: #f0f0f0;}
-    QTabBar::tab {background: #d0d0d0;
-        padding-left : 10px;
-        margin-right: 5px;
-        border: 1px solid #bbb;
-        }
-    QTabBar::tab:selected {
-        background: #37c62f;
-        color: black;}
-    """
-)
-
-def log(message,reset=False):
-    """
-    Écrit un message dans le fichier de log avec un horodatage.
-    Le fichier est ouvert en mode append pour ne pas écraser les données.
-    """
-    current_directory = os.path.dirname(__file__)
-    # Remonter d'un niveau
-    parent_directory = os.path.abspath(Path(current_directory, os.pardir))
-    fichier = Path(parent_directory, "log_PluginsManager.txt")
-    mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
-    with open(fichier, mode, encoding="utf-8") as f:
-        f.write(f"{message}\n")
-
-def affiches_spec_bdtopo():
-    webbrowser.open("https://bdtopoexplorer.ign.fr/")
-
-def afficheerreur(titre,text):
-    msg = QMessageBox()
-    msg.setWindowTitle(titre)
-    msg.setText(text)
-    msg.setIcon(Warning)
-    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
-    msg.exec()
-
-def affichemessageAvertissement( titre, text):
-    msg = QMessageBox()
-    msg.setIcon(Warning)
-
-    msg.setWindowTitle(titre)
-    msg.setText(text)
-    btnAnnuler = msg.addButton("Annuler", YesRole)
-    btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
-    btnValider = msg.addButton("Supprimer", AcceptRole)
-    btnValider.setStyleSheet("color:green ; font-weight: bold")
-    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
-    msg.exec()
-    if msg.clickedButton() == btnAnnuler:
-        return False
-    if msg.clickedButton() == btnValider:
-        return True
-    return None
-
-def afficheDoc():
-    webbrowser.open("https://ignf.github.io/PluginsManager-qgis-plugin/")
 
 class PluginMaitre:
     def __init__(self, iface):
+
 
         log("Initialisation du plugin maître",reset=True)
 
@@ -123,10 +44,13 @@ class PluginMaitre:
         self.toolbars = {}
 
         self.dlg = None
+        self.dlgaddonglet = None
         self.iface = iface
         self.timer = None
 
-        self.maj = MajPlugins(self.iface)
+        # self.maj = MajPlugins(self.iface)
+        self.installer = InstallerDialog()
+        self.maj = MajPlugins(self.iface, self.installer)
 
         # Declare instance attributes
         self.actions = []
@@ -167,7 +91,14 @@ class PluginMaitre:
         parent_directory = os.path.abspath(Path(current_directory, os.pardir))
 
         # ************************************************************************
-        # plugin PluginsManager
+        # Installation des plugins IGN
+        icon_path = Path(os.path.dirname(__file__)) / "icons" / "install_plugins.png"
+        action = QAction(QIcon(str(icon_path)), "Installation des plugins IGN", self.iface.mainWindow())
+        action.triggered.connect(self.on_install_plugins_ign)
+        self.menu.addAction(action)
+
+        # ************************************************************************
+        # Configuration
         icon_path = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
         action = QAction(QIcon(str(icon_path)),"Configuration",self.iface.mainWindow())
         action.triggered.connect(self.run)
@@ -181,9 +112,9 @@ class PluginMaitre:
         # requete.triggered.connect(self.on_requete)
         # self.menu_requete.addAction(requete)
         # # # action dans le sous-menu
-        # # requete_unique = QAction("Lancer une requêtes unique", self.iface.mainWindow())
+        # # requete_unique = QAction("Lancer une requête unique", self.iface.mainWindow())
         # # requete_unique.triggered.connect(self.on_requete_unique)
-        # # requete_enchaine = QAction("Lancer une requêtes enchainées", self.iface.mainWindow())
+        # # requete_enchaine = QAction("Lancer une requête enchainée", self.iface.mainWindow())
         # # requete_enchaine.triggered.connect(self.on_requete_enchaine)
         # # self.menu_requete.addAction(requete_unique)
         # # self.menu_requete.addAction(requete_enchaine)
@@ -224,11 +155,18 @@ class PluginMaitre:
         # verif maj
         self.menu.addSeparator()
         action = QAction("Vérifiez la mise à jour des plugins", self.iface.mainWindow())
-        action.triggered.connect(self.maj.execute_installeur)
+        # action.triggered.connect(self.maj.execute_installeur)
         self.menu.addAction(action)
 
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
+
+        # ************************************************************************
+        # Aide
+        icon_path = Path(os.path.dirname(__file__)) / "icons" / "aide.png"
+        action = QAction(QIcon(str(icon_path)), "Aide", self.iface.mainWindow())
+        action.triggered.connect(self.apropos)
+        self.menu.addAction(action)
 
     def get_lien_doc_from_metadata(self, plugin):
         plugins_dir = os.path.join(QgsApplication.qgisSettingsDirPath(),"python","plugins")
@@ -280,6 +218,14 @@ class PluginMaitre:
         # ajout, suppression dans la toolbar
         self.add_plugin_in_toolbars()
         self.init_menuIGN()
+
+    # ==================================================
+    # installation des plugins IGN
+    def on_install_plugins_ign(self):
+        self.installer.init_aspect_dialog()
+        self.installer.remplir_dlg_plugins()
+        self.installer.exec()
+
 
     # ==================================================
     # "execution" du plugin en paramètre
@@ -347,7 +293,7 @@ class PluginMaitre:
     # ==================================================
     # retourne une liste de tous les plugins du xml pour un onglet donné
     def get_plugin_coche_fromXML(self,onglet):
-        # charge le xml existant
+        # charge le XML existant
         tree = ET.parse(self.path_xml)
         root = tree.getroot()
         onglet_xml = root.find(f".//onglet[@id='{onglet}']")
@@ -493,14 +439,14 @@ class PluginMaitre:
     def show_dial_add_onglet(self):
         self.dlgaddonglet.lineEdit_newonglet.clear()
         self.dlgaddonglet.lineEdit_newonglet.setFocus()
-        # self.dlgaddinglet.show()
         self.dlgaddonglet.exec()
 
     # ==================================================
-    # ouverture du dialogue "à propos de"
+    # ouverture du dialogue "à propos de..."
     def apropos(self):
         dlgAProposDe = QDialog()
-        loadUi(os.path.dirname(__file__) + "/aproposde.ui", dlgAProposDe)
+        ui_file = Path(__file__).parent / "ui" / "aproposde.ui"
+        loadUi(ui_file, dlgAProposDe)
         dlgAProposDe.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
         dlgAProposDe.setWindowTitle(f"{TITRE}")
         dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
@@ -544,7 +490,7 @@ class PluginMaitre:
     # ==================================================
     # ajout onglet et plugins cochés dans le xml
     def add_ongletXML(self,nom):
-        # charge le xml existant
+        # charge le XML existant
         tree = ET.parse(self.path_xml)
         root = tree.getroot()
 
@@ -556,14 +502,25 @@ class PluginMaitre:
         ET.indent(root, "    ")
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
-
     def initGui(self):
-        # téléchargement du xml correspondant à l'installateur présent dans le repertoire des plugins
-        # puis comparaison de la version de l'installateur (exe) avec celle du xml
-        # puis comparaison des versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
-        # tout se fait dans "download_xml_plugins" car le téléchargement est asynchrone
-        # et il faut attendre la fin du téléchargement pour faire les comparaisons
-        self.maj.download_file("XML")
+        # recuperation des infos des plugins du depot officiel si plugins dans le depot officiel
+        # sinon recuperation des infos dans le depot github
+        # puis comparaison des versions des plugins installés (lecture metadata.txt) avec celles des fichiers XML téléchargé
+        list_plugins_to_install = {}
+        for depot in ("officiel", "github"):
+            for name, infos in self.installer.pluginsIGN.get_plugins_ign_from_depot(depot).items():
+                version_installe = get_info_plugins_installe(name,"version")
+                # print(f"url = ,{name} : {infos["download_url"]}")
+                if version_installe is not None and version_installe != infos["version"]:
+                    # print(f"version installé --> dispo = {name} : {version_installe} --> {infos["version"]}")
+                    list_plugins_to_install[name] = {"version" : infos["version"],
+                                                     "download_url": infos["download_url"],
+                                                     }
+
+        if list_plugins_to_install:
+            self.maj.init_dial_maj()
+            self.maj.show_dial_maj_plugins(list_plugins_to_install)
+
 
         self.first_start = True
 
@@ -577,13 +534,18 @@ class PluginMaitre:
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start:
             self.first_start = False
-            self.dlg = PluginMaitreDialog()
+            self.dlg = QDialog()
+            ui_file = Path(__file__).parent / "ui" / "plugin_maitre_dialog_base.ui"
+            loadUi(ui_file, self.dlg)
+
             self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
             self.dlg.setWindowFlags(Dialog | WindowTitleHint | WindowCloseButtonHint)
 
             # dial d'ajout d'onglet
-            self.dlgaddonglet = AddOnglet()
+            self.dlgaddonglet = QDialog()
+            ui_file = Path(__file__).parent / "ui" / "add_onglet.ui"
+            loadUi(ui_file, self.dlgaddonglet)
             self.dlgaddonglet.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
             self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
 

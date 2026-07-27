@@ -27,9 +27,9 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>icons/icon.png</normaloff>icons/icon.png</iconset>
+    <normaloff>../icons/icon.png</normaloff>../icons/icon.png</iconset>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
