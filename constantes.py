@@ -1,3 +1,8 @@
+import os
+from pathlib import Path
+
+from qgis.PyQt.QtCore import QUrl
+
 TITRE = "PluginsManager"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
@@ -5,6 +10,10 @@ PREFIXE_PLUGIN_IGN = "IGN_"
 COLOR_MAJ = "#FFF176"
 COLOR_COMBO = "#bababa"
 COLOR_NON_INSTALLE = "#ff6e6e"
+
+REP_PLUGIN_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/")
+URL_PLUGINS_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1")
+URL_PROFIL_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json?nocache=1")
 
 PLUGINS_IGN = {
     "IGN DigitizingDirection",
@@ -25,7 +34,9 @@ PLUGINS_IGN = {
     "IGN_vueZ"
 }
 
+
 DOSSIER_ONGLET = "config_PluginsManager"
+PATH_PROFIL_ACTIF = Path(os.path.dirname(__file__), DOSSIER_ONGLET, "profil_actif.json")
 # liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
 # EXCEPT_PLUGIN = ["IGN_Vues"]
 EXCEPT_PLUGIN = [""]

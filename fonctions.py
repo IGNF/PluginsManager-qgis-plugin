@@ -62,3 +62,9 @@ def get_info_plugins_installe(plugin_name,info):
                 if line.startswith(f"{info}="):
                     return line.strip().split("=")[1]
     return None
+
+# def load_profils_json():
+#     url = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json?nocache=1")
+#     with open(url, "r", encoding="utf-8") as f:
+#         profils = json.load(f)
+#     return profils

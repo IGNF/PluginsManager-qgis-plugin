@@ -1,4 +1,3 @@
-import os
 import zipfile
 from xml.etree import ElementTree as ET
 
@@ -8,20 +7,20 @@ from qgis.core import Qgis,QgsNetworkAccessManager
 
 from .constantes import *
 
+
 class PluginsIGN:
     def __init__(self):
         self._plugins_xml = {"officiel": None,"github": None}
         self.list_plugins_github = []
 
-    def load_xml(self,type_depot="officiel"):
-        url = None
-        if type_depot == "officiel":
-            version = Qgis.QGIS_VERSION.split("-")[0]  # ex. "3.44.8"
-            version_courte = ".".join(version.split(".")[:2])  # "3.44"
-            url = QUrl(f"https://plugins.qgis.org/plugins/plugins.xml?qgis={version_courte}")
-        elif type_depot == "github":
-            url = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1")
-        request = QNetworkRequest(url)
+    def get_url_depot_officiel(self):
+        version = Qgis.QGIS_VERSION.split("-")[0]  # ex. "3.44.8"
+        version_courte = ".".join(version.split(".")[:2])  # "3.44"
+        return QUrl(f"https://plugins.qgis.org/plugins/plugins.xml?qgis={version_courte}")
+
+
+    def load_fichier(self, url):
+        request = QNetworkRequest(QUrl(url))
         reply = QgsNetworkAccessManager.instance().get(request)
         loop = QEventLoop()
         reply.finished.connect(loop.quit)
@@ -36,7 +35,11 @@ class PluginsIGN:
 
     def get_plugins_ign_from_depot(self,type_depot) -> dict:
         if self._plugins_xml[type_depot] is None:
-            self._plugins_xml[type_depot] = self.load_xml(type_depot)
+            if type_depot == "officiel":
+                url = self.get_url_depot_officiel()
+                self._plugins_xml[type_depot] = self.load_fichier(url)
+            elif type_depot == "github":
+                self._plugins_xml[type_depot] = self.load_fichier(URL_PLUGINS_GITHUB)
         xml = self._plugins_xml[type_depot]
         if xml is None:
             return {}

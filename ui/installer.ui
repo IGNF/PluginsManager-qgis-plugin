@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1295</width>
-    <height>433</height>
+    <width>1200</width>
+    <height>408</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,6 +20,25 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="2">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBox_profils"/>
+     </item>
+     <item row="0" column="0" colspan="8">
+      <widget class="QTableWidget" name="tablePlugins"/>
+     </item>
      <item row="1" column="3">
       <widget class="QLabel" name="label_non_installe">
        <property name="minimumSize">
@@ -42,29 +61,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="7">
-      <widget class="QPushButton" name="pushButton_tout_rien">
-       <property name="text">
-        <string>Tout sélectionner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="0" colspan="9">
-      <widget class="QTableWidget" name="tablePlugins"/>
-     </item>
      <item row="1" column="6">
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -78,7 +74,7 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="8">
+     <item row="1" column="7">
       <widget class="QPushButton" name="pushButton_installer">
        <property name="maximumSize">
         <size>
@@ -95,6 +91,13 @@
       <widget class="QLabel" name="label">
        <property name="text">
         <string> : Nouvelle version disponible</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Profil souhaité : </string>
        </property>
       </widget>
      </item>

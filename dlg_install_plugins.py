@@ -3,6 +3,9 @@ from qgis.PyQt.QtGui import QFont,QBrush, QColor
 from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
 from qgis.PyQt.uic import loadUi
 
+import json
+
+
 from .fonctions import *
 from .plugins_ign import *
 from.progressbar import DownloadProgress
@@ -11,6 +14,7 @@ class InstallerDialog(QDialog):
     def __init__(self,parent = None):
         super().__init__(parent)
 
+        self.profil_actif = None
         self.pluginsIGN = PluginsIGN()
 
         self.dossier_profil = None
@@ -23,13 +27,12 @@ class InstallerDialog(QDialog):
         loadUi(ui_file, self)
 
         self.pushButton_installer.clicked.connect(self.on_installe_plugin)
-        self.pushButton_tout_rien.clicked.connect(self.on_tout_rien)
+        self.comboBox_profils.currentIndexChanged.connect(self.on_profil_changed)
 
     def init_aspect_dialog(self):
         self.tablePlugins.clear()
         self.tablePlugins.setRowCount(0)
         self.label_non_installe.setStyleSheet(f"background-color: {COLOR_MAJ}")
-        self.pushButton_tout_rien.setStyleSheet("font : bold ;background-color: #00b909; color: black;")
         self.pushButton_installer.setStyleSheet("font : bold ;background-color: #00b909; color: black;")
 
         self.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
@@ -49,9 +52,30 @@ class InstallerDialog(QDialog):
         self.tablePlugins.verticalHeader().setMinimumSectionSize(1)
         self.tablePlugins.verticalHeader().setDefaultSectionSize(20)
 
+        self.init_combo_profils()
+        self.load_profil_actif()
+
+    def init_combo_profils(self):
+        self.comboBox_profils.blockSignals(True) # bloquer le signal car additem emet currentIndexChanged
+        self.comboBox_profils.clear()
+        # contenu = self.pluginsIGN.load_fichier("profils")
+        contenu = self.pluginsIGN.load_fichier(URL_PROFIL_GITHUB)
+        self.list_profils = json.loads(contenu.decode("utf-8"))
+        for profil,fichier in self.list_profils.items():
+            self.comboBox_profils.addItem(profil,fichier)
+        self.comboBox_profils.blockSignals(False)
+        self.comboBox_profils.setStyleSheet("""
+        QComboBox {
+            font-weight: bold;
+            color: red;
+        }
+        """)
+
+
     def remplir_dlg_plugins(self):
         self.tablePlugins.setUpdatesEnabled(False)
         self.tablePlugins.setSortingEnabled(False)
+        list_plugins_profil = self.get_plugins_profil_actif()
         for depot in ("officiel", "github"):
             for name, infos in self.pluginsIGN.get_plugins_ign_from_depot(depot).items():
                 version = infos["version"]
@@ -68,6 +92,11 @@ class InstallerDialog(QDialog):
                     check = "False"
                 item_name = self.creer_item(name,check)
                 item_name.setData(Qt.UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
+                # si le plugin n'est pas dans la liste des plugins du profil actif on le grise
+                if name not in list_plugins_profil:
+                    item_name.setBackground(QBrush(QColor(200, 200, 200)))
+                    item_name.setCheckState(Unchecked)
+                    item_name.setFlags(item_name.flags() & ~Qt.ItemIsUserCheckable & ~Qt.ItemIsEnabled)
                 self.tablePlugins.setItem(ligne, 0, item_name)
 
                 # DEPOT
@@ -92,9 +121,63 @@ class InstallerDialog(QDialog):
                 # DESCRIPTION
                 item_descr = self.creer_item(description)
                 self.tablePlugins.setItem(ligne, 4, item_descr)
+
+
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
+
+    def on_profil_changed(self,index):
+        texte = self.comboBox_profils.itemText(index)
+        valeur = self.comboBox_profils.itemData(index)
+        nouveau_profil = {'nom': texte,'fichier': valeur}
+        # si pas de changement on reecrit pas le fichier
+        if nouveau_profil == self.profil_actif:
+            return
+        self.profil_actif = nouveau_profil
+
+        # sauvegarde du profil actif
+        with open(PATH_PROFIL_ACTIF,"w",encoding="utf-8") as f:
+            json.dump( self.profil_actif, f, indent=4, ensure_ascii=False)
+
+        # griser les plugins qui ne font pas partie du profil actif
+        self.get_plugins_profil_actif()
+
+        self.tablePlugins.clearContents()
+        self.tablePlugins.setRowCount(0)
+        self.remplir_dlg_plugins()
+
+    def get_plugins_profil_actif(self):
+        if self.profil_actif is None:
+            return []
+        # recuperation de la liste des plugins correspondant au profil actif
+        fic_xml = self.profil_actif['fichier']
+        url = REP_PLUGIN_GITHUB.resolved(QUrl(fic_xml)) # construction de l'url
+        xml = self.pluginsIGN.load_fichier(url)
+
+        list_plugins = []
+        root = ET.fromstring(xml)
+        for plugin in root.findall("pyqgis_plugin"):
+            list_plugins.append(plugin.attrib.get("name"))
+        return list_plugins
+
+
+    def load_profil_actif(self):
+        if os.path.exists(PATH_PROFIL_ACTIF):
+            with open(PATH_PROFIL_ACTIF, "r", encoding="utf-8") as f:
+                self.profil_actif = json.load(f)
+        else:
+            # profil par défaut = premier profil du combobox si le fichier n'existe pas
+            # cas de la premiere ouverture
+            self.profil_actif = {
+                "nom": self.comboBox_profils.itemText(0),
+                "fichier": self.comboBox_profils.itemData(0)
+            }
+        # changement du combobox en fonction du profil actif
+        self.comboBox_profils.blockSignals(True)
+        self.comboBox_profils.setCurrentText(self.profil_actif['nom'])
+        self.comboBox_profils.blockSignals(False)
+
 
     def creer_item(self,texte,check = ""):
         font = QFont()
@@ -116,21 +199,6 @@ class InstallerDialog(QDialog):
             pass
         return item
 
-    def on_tout_rien(self):
-        if self.ischeck:
-            for row in range(self.tablePlugins.rowCount()):
-                item = self.tablePlugins.item(row, 0)  # colonne Nom
-                # if self.tablePlugins.item(row, 0).text() != PLUGIN_MAITRE:
-                item.setCheckState(Unchecked)
-                self.pushButton_tout_rien.setText("Tout sélectionner")
-                self.ischeck = False
-        else:
-            for row in range(self.tablePlugins.rowCount()):
-                item = self.tablePlugins.item(row, 0)  # colonne Nom
-                item.setCheckState(Checked)
-                self.pushButton_tout_rien.setText("Rien sélectionner")
-                self.ischeck = True
-
     def get_plugins_checked(self):
         plugins_checked = []
         for row in range(self.tablePlugins.rowCount()):
@@ -145,7 +213,6 @@ class InstallerDialog(QDialog):
         list_plugin_to_install = self.get_plugins_checked()
         if len(list_plugin_to_install) == 0:
             return None
-        print(f"Plugins à installer : {list_plugin_to_install}")
         progress = DownloadProgress(self, len(list_plugin_to_install))
         for idx,plugin in enumerate(list_plugin_to_install,start = 1):
             progress.update(idx, f"Téléchargement de : {plugin["name"]}")
@@ -157,7 +224,6 @@ class InstallerDialog(QDialog):
             # Remonter d'un niveau
             parent_directory = os.path.abspath(Path(current_directory, os.pardir))
             chemin_zip = os.path.join(parent_directory, f"{plugin['name']}.zip")
-            print(f"Installation du plugin : {plugin['name']}-{chemin_zip}")
             with open(chemin_zip, "wb") as f:
                 f.write(plugins_bytes)
 
