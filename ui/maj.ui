@@ -46,7 +46,7 @@
      <item row="2" column="0">
       <widget class="QPushButton" name="pushButton_executer_installateur">
        <property name="text">
-        <string>Installer les mises à jour</string>
+        <string>Ouvrir l'interface de téléchargement</string>
        </property>
       </widget>
      </item>
