@@ -11,8 +11,10 @@ from .constantes import *
 class PluginsIGN:
     def __init__(self):
         self._all_plugins_name_dispo = None
-        self._plugins_xml = {"officiel": None,"github": None}
+        self._plugins_officiel_trouves = set()
         self.list_plugins_github = []
+
+        self._plugins_xml = {"officiel": None,"github": None}
 
     def get_url_depot_officiel(self):
         version = Qgis.QGIS_VERSION.split("-")[0]  # ex. "3.44.8"
@@ -68,9 +70,8 @@ class PluginsIGN:
         if xml is None:
             return {}
 
-
         plugins = {}
-        plugins_trouves = set()
+
         root = ET.fromstring(xml)
         for plugin in root.findall("pyqgis_plugin"):
             name = plugin.attrib.get("name")
@@ -78,7 +79,7 @@ class PluginsIGN:
             if type_depot == "officiel":
                 if name not in self._all_plugins_name_dispo:
                     continue
-                plugins_trouves.add(name)
+                self._plugins_officiel_trouves.add(name)
             elif type_depot == "github":
                 if name not in self.list_plugins_github:
                     continue
@@ -90,7 +91,7 @@ class PluginsIGN:
         # Plugins IGN absents du dépôt officiel
         # ceux-ci seront à télécharger depuis github
         if type_depot == "officiel":
-            self.list_plugins_github = set(self._all_plugins_name_dispo) - plugins_trouves
+            self.list_plugins_github = set(self._all_plugins_name_dispo) - self._plugins_officiel_trouves
         return plugins
 
     def download_plugins(self,download_url):

@@ -17,7 +17,10 @@ try :
     RightSide = QTabBar.ButtonPosition.RightSide
     LeftSide = QTabBar.ButtonPosition.LeftSide
     Warning = QMessageBox.Icon.Warning
+    Information = QMessageBox.Icon.Information
     YesRole = QMessageBox.ButtonRole.YesRole
+    NoRole = QMessageBox.ButtonRole.NoRole
+    RejectRole = QMessageBox.ButtonRole.RejectRole
     AcceptRole = QMessageBox.ButtonRole.AcceptRole
     NoSelection = QAbstractItemView.SelectionMode.NoSelection
     AlignCenter = Qt.AlignmentFlag.AlignCenter
@@ -37,7 +40,10 @@ except :
     RightSide = QTabBar.RightSide
     LeftSide = QTabBar.LeftSide
     Warning = QMessageBox.Warning
+    Information = QMessageBox.Information
     YesRole = QMessageBox.YesRole
+    NoRole = QMessageBox.NoRole
+    RejectRole = QMessageBox.RejectRole
     AcceptRole = QMessageBox.AcceptRole
     NoSelection = QListWidget.NoSelection
     AlignCenter = Qt.AlignCenter
