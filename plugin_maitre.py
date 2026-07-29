@@ -94,7 +94,7 @@ class PluginMaitre:
         # Installation des plugins IGN
         icon_path = Path(os.path.dirname(__file__)) / "icons" / "install_plugins.png"
         action = QAction(QIcon(str(icon_path)), "Installation des plugins IGN", self.iface.mainWindow())
-        action.triggered.connect(self.on_install_plugins_ign)
+        action.triggered.connect(self.on_show_dial_install_plugins_ign)
         self.menu.addAction(action)
 
         # ************************************************************************
@@ -171,7 +171,6 @@ class PluginMaitre:
             for line in f:
                 if line.startswith("homepage="):
                     lien = line.strip().split("=")[1]
-                    print(lien)
                     if lien ==  r"http://homepage":
                         afficheerreur("Attention", f"La documentation du plugin {plugin} est absente.")
                         return None
@@ -217,7 +216,7 @@ class PluginMaitre:
 
     # ==================================================
     # installation des plugins IGN
-    def on_install_plugins_ign(self):
+    def on_show_dial_install_plugins_ign(self):
         self.installer.init_aspect_dialog()
         self.installer.remplir_dlg_plugins()
         self.installer.exec()
@@ -506,9 +505,7 @@ class PluginMaitre:
         for depot in ("officiel", "github"):
             for name, infos in self.installer.pluginsIGN.get_plugins_ign_from_depot(depot).items():
                 version_installe = get_info_plugins_installe(name,"version")
-                # print(f"url = ,{name} : {infos["download_url"]}")
                 if version_installe is not None and version_installe != infos["version"]:
-                    # print(f"version installé --> dispo = {name} : {version_installe} --> {infos["version"]}")
                     list_plugins_to_install[name] = {"version" : infos["version"],
                                                      "download_url": infos["download_url"],
                                                      }

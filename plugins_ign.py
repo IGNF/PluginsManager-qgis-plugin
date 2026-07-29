@@ -10,6 +10,7 @@ from .constantes import *
 
 class PluginsIGN:
     def __init__(self):
+        self._all_plugins_name_dispo = None
         self._plugins_xml = {"officiel": None,"github": None}
         self.list_plugins_github = []
 
@@ -33,7 +34,30 @@ class PluginsIGN:
         finally:
             reply.deleteLater()
 
+    def get_xml(self, depot):
+        if self._plugins_xml[depot] is None:
+            if depot == "officiel":
+                self._plugins_xml[depot] = self.load_fichier(self.get_url_depot_officiel())
+            elif depot == "github":
+                self._plugins_xml[depot] = self.load_fichier(URL_PLUGINS_GITHUB)
+            else:
+                return None
+        return self._plugins_xml[depot]
+
+
+    def get_all_plugins_dispo(self):
+        if self._all_plugins_name_dispo is None:
+            xml = self.get_xml("github")
+            root = ET.fromstring(xml)
+            self._all_plugins_name_dispo = {
+                plugin.attrib["name"]
+                for plugin in root.findall("pyqgis_plugin")
+            }
+        return self._all_plugins_name_dispo
+
     def get_plugins_ign_from_depot(self,type_depot) -> dict:
+        # print(f"all plugins dispo = {self.get_all_plugins_dispo()}")
+        self._all_plugins_name_dispo = self.get_all_plugins_dispo()
         if self._plugins_xml[type_depot] is None:
             if type_depot == "officiel":
                 url = self.get_url_depot_officiel()
@@ -44,6 +68,7 @@ class PluginsIGN:
         if xml is None:
             return {}
 
+
         plugins = {}
         plugins_trouves = set()
         root = ET.fromstring(xml)
@@ -51,7 +76,7 @@ class PluginsIGN:
             name = plugin.attrib.get("name")
             # plugin IGN dans le depot officiel
             if type_depot == "officiel":
-                if name not in PLUGINS_IGN:
+                if name not in self._all_plugins_name_dispo:
                     continue
                 plugins_trouves.add(name)
             elif type_depot == "github":
@@ -65,7 +90,7 @@ class PluginsIGN:
         # Plugins IGN absents du dépôt officiel
         # ceux-ci seront à télécharger depuis github
         if type_depot == "officiel":
-            self.list_plugins_github = set(PLUGINS_IGN) - plugins_trouves
+            self.list_plugins_github = set(self._all_plugins_name_dispo) - plugins_trouves
         return plugins
 
     def download_plugins(self,download_url):
@@ -97,7 +122,6 @@ class PluginsIGN:
             print(f"Erreur dézip : {e}")
 
         # Supprimer le fichier zip
-        print(f"Suppression du fichier zip : {fic_zip}")
         os.remove(fic_zip)
 
 

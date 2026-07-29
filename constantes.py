@@ -15,25 +15,6 @@ REP_PLUGIN_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-p
 URL_PLUGINS_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1")
 URL_PROFIL_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json?nocache=1")
 
-PLUGINS_IGN = {
-    "IGN DigitizingDirection",
-    "IGN ShortestPath",
-    "MultiViewManager",
-    "IGN_altibonne",
-    "IGN_assistant-complexe",
-    "IGN_assistant-dfci",
-    "IGN_assistant-hydro-national",
-    "IGN_assistant-liste",
-    "IGN_assistant-odonyme",
-    "IGN_assistant-route",
-    "IGN_boite_outils",
-    "IGN_jeux_attributs",
-    "IGN_jeux_attributs_generique",
-    "IGN_objets_preferes",
-    # "IGN_requetes",
-    "IGN_vueZ"
-}
-
 
 DOSSIER_ONGLET = "config_PluginsManager"
 PATH_PROFIL_ACTIF = Path(os.path.dirname(__file__), DOSSIER_ONGLET, "profil_actif.json")
@@ -41,10 +22,10 @@ PATH_PROFIL_ACTIF = Path(os.path.dirname(__file__), DOSSIER_ONGLET, "profil_acti
 # EXCEPT_PLUGIN = ["IGN_Vues"]
 EXCEPT_PLUGIN = [""]
 
-PEFILE = ["pefile","pefile-2024.8.26-py3-none-any.whl"]
+# PEFILE = ["pefile","pefile-2024.8.26-py3-none-any.whl"]
 # DEFUSEDXML = ["defusedxml","defusedxml-0.7.1-py2.py3-none-any.whl"]
 # PACKAGES = [PEFILE,DEFUSEDXML]
-PACKAGES = [PEFILE]
+# PACKAGES = [PEFILE]
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils

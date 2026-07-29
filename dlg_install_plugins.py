@@ -75,7 +75,9 @@ class InstallerDialog(QDialog):
     def remplir_dlg_plugins(self):
         self.tablePlugins.setUpdatesEnabled(False)
         self.tablePlugins.setSortingEnabled(False)
-        list_plugins_profil = self.get_plugins_profil_actif()
+        # construction de l'url pour le profil actif
+        list_plugins_profil = self.get_plugins_profil()
+
         for depot in ("officiel", "github"):
             for name, infos in self.pluginsIGN.get_plugins_ign_from_depot(depot).items():
                 version = infos["version"]
@@ -126,6 +128,7 @@ class InstallerDialog(QDialog):
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
+        self.tablePlugins.sortItems(0, Qt.AscendingOrder)
 
     def on_profil_changed(self,index):
         texte = self.comboBox_profils.itemText(index)
@@ -140,14 +143,13 @@ class InstallerDialog(QDialog):
         with open(PATH_PROFIL_ACTIF,"w",encoding="utf-8") as f:
             json.dump( self.profil_actif, f, indent=4, ensure_ascii=False)
 
-        # griser les plugins qui ne font pas partie du profil actif
-        self.get_plugins_profil_actif()
+
 
         self.tablePlugins.clearContents()
         self.tablePlugins.setRowCount(0)
         self.remplir_dlg_plugins()
 
-    def get_plugins_profil_actif(self):
+    def get_plugins_profil(self):
         if self.profil_actif is None:
             return []
         # recuperation de la liste des plugins correspondant au profil actif
@@ -230,9 +232,9 @@ class InstallerDialog(QDialog):
             # extraction du zip
             self.pluginsIGN.extract_zip(parent_directory,chemin_zip)
 
-        text = ("Installation terminé\n\n - Veuillez redémarrer QGIS pour prendre\n"
+        text = ("Installation terminée\n\n - Veuillez redémarrer QGIS pour prendre\n"
                 "en compte les plugins")
-        QMessageBox.information(self, "Installateur de plugins", text)
+        QMessageBox.information(self, "Installation des plugins", text)
         return progress
 
 
