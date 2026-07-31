@@ -11,6 +11,7 @@ COLOR_MAJ = "#FFF176"
 COLOR_COMBO = "#bababa"
 COLOR_NON_INSTALLE = "#ff6e6e"
 
+URL_QGIS = "https://plugins.qgis.org"
 REP_PLUGIN_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/")
 URL_PLUGINS_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1")
 URL_PROFIL_GITHUB = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json?nocache=1")

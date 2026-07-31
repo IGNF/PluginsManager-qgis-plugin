@@ -2,7 +2,7 @@ import zipfile
 from xml.etree import ElementTree as ET
 
 from qgis.PyQt.QtCore import QUrl, QEventLoop
-from qgis.PyQt.QtNetwork import QNetworkRequest
+from qgis.PyQt.QtNetwork import QNetworkRequest,QNetworkReply
 from qgis.core import Qgis,QgsNetworkAccessManager
 
 from .constantes import *
@@ -29,10 +29,11 @@ class PluginsIGN:
         reply.finished.connect(loop.quit)
         loop.exec()
         try:
-            if reply.error():
-                print(reply.errorString())
+            err = reply.error()
+            if err != QNetworkReply.NetworkError.NoError:
                 return None
-            return bytes(reply.readAll())
+            data = bytes(reply.readAll())
+            return data
         finally:
             reply.deleteLater()
 
@@ -50,6 +51,8 @@ class PluginsIGN:
     def get_all_plugins_dispo(self):
         if self._all_plugins_name_dispo is None:
             xml = self.get_xml("github")
+            if not xml:
+                return set()
             root = ET.fromstring(xml)
             self._all_plugins_name_dispo = {
                 plugin.attrib["name"]
@@ -75,6 +78,7 @@ class PluginsIGN:
         root = ET.fromstring(xml)
         for plugin in root.findall("pyqgis_plugin"):
             name = plugin.attrib.get("name")
+
             # plugin IGN dans le depot officiel
             if type_depot == "officiel":
                 if name not in self._all_plugins_name_dispo:
@@ -87,6 +91,7 @@ class PluginsIGN:
             plugins[name] = {"version": plugin.attrib.get("version"),
                                 "download_url": plugin.findtext("download_url"),
                                 "description": plugin.findtext("description"),
+                                "icon" : plugin.findtext("icon")
                                  }
         # Plugins IGN absents du dépôt officiel
         # ceux-ci seront à télécharger depuis github
@@ -101,8 +106,8 @@ class PluginsIGN:
         reply.finished.connect(loop.quit)
         loop.exec() # bloque jusqu'à la fin du telechargement
         try:
-            if reply.error():
-                print(reply.errorString())
+            err = reply.error()
+            if err != QNetworkReply.NetworkError.NoError:
                 return None
             return bytes(reply.readAll()) # le fichier est telechargé sous forme de bytes
         finally:

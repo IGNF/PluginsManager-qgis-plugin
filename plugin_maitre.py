@@ -49,7 +49,7 @@ class PluginMaitre:
         self.timer = None
 
         # self.maj = MajPlugins(self.iface)
-        self.installer = InstallerDialog()
+        self.installer = InstallerDialog(self)
         self.maj = MajPlugins(self.iface, self.installer)
 
         # Declare instance attributes
@@ -70,7 +70,7 @@ class PluginMaitre:
         # list contenant les plugins cochés
         self.listplugin_coche = []
 
-        self.getlistplugin_ign()
+        self._plugins_installes = self.getlistplugin_ign()
         self.path_xml = Path(os.path.dirname(__file__), DOSSIER_ONGLET, "tabwidget.xml")
         if not os.path.exists(self.path_xml):
             self.initXML()
@@ -135,7 +135,7 @@ class PluginMaitre:
         # menu "Documentation plugins"
         self.menu_doc_plugins = QMenu("Documentations des plugins ...", self.iface.mainWindow())
         self.menu.addMenu(self.menu_doc_plugins)
-        for plugin in self.getlistplugin_ign():
+        for plugin in self._plugins_installes:
             doc_plugin = QAction(f"{plugin}", self.iface.mainWindow())
             doc_plugin.triggered.connect(lambda *_, plugin1=plugin: self.on_affiche_doc_plugin(plugin1))
             self.menu_doc_plugins.addAction(doc_plugin)
@@ -214,6 +214,25 @@ class PluginMaitre:
         self.add_plugin_in_toolbars()
         self.init_menuIGN()
 
+    # rafraichir les barres d'outils avec liste des plugins installés
+    # utils apres installation via un profil
+    def refresh_plugins(self):
+        self.clean_tabwidget_xml()
+        self.add_plugin_in_toolbars()
+        self.init_menuIGN()
+
+    def clean_tabwidget_xml(self):
+        tree = ET.parse(self.path_xml)
+        root = tree.getroot()
+        plugins_installes = self.getlistplugin_ign()
+        for onglet in root.findall("onglet"):
+            for plugin in list(onglet.findall("plugin")):
+                if plugin.text not in plugins_installes:
+                    onglet.remove(plugin)
+
+        ET.indent(root, "    ")
+        tree.write(self.path_xml, encoding="utf-8", xml_declaration=True)
+
     # ==================================================
     # installation des plugins IGN
     def on_show_dial_install_plugins_ign(self):
@@ -237,12 +256,16 @@ class PluginMaitre:
     # ==================================================
     # récupérer la liste de tous les plugins IGN installés
     def getlistplugin_ign(self):
-        listplugin = qgis.utils.available_plugins
-        self.plugin_ign.clear()
-
-        for plugin in listplugin:
-            if PREFIXE_PLUGIN_IGN in plugin and plugin not in EXCEPT_PLUGIN:
-                self.plugin_ign.append(plugin)
+        # analyse du dossier
+        # ne pas utiliser qgis.utils.available_plugins car le scan se fait qu'apres
+        # redémarrage de qgis
+        plugins_dir = Path(QgsApplication.qgisSettingsDirPath()) / "python" / "plugins"
+        self.plugin_ign = [p.name
+            for p in plugins_dir.iterdir()
+            if p.is_dir()
+               and p.name.startswith(PREFIXE_PLUGIN_IGN)
+               and p.name not in EXCEPT_PLUGIN
+        ]
         return self.plugin_ign
 
     # ==================================================
@@ -387,7 +410,7 @@ class PluginMaitre:
                 # si l'onglet n'a pas de plugin défini, on n'ajoute pas à la barre d'outil,
                 # mais il reste dans le xml si on veut ajouter des plugins par la suite
                 if len(self.get_plugin_coche_fromXML(onglet)) == 0:
-                    return
+                    continue
 
                 self.toolbar = self.iface.addToolBar(onglet)
                 self.toolbars[onglet] = self.toolbar
@@ -508,6 +531,7 @@ class PluginMaitre:
                 if version_installe is not None and version_installe != infos["version"]:
                     list_plugins_to_install[name] = {"version" : infos["version"],
                                                      "download_url": infos["download_url"],
+                                                     "icon": infos["icon"]
                                                      }
 
         if list_plugins_to_install:

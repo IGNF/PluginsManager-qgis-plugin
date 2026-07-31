@@ -24,6 +24,8 @@ try :
     AcceptRole = QMessageBox.ButtonRole.AcceptRole
     NoSelection = QAbstractItemView.SelectionMode.NoSelection
     AlignCenter = Qt.AlignmentFlag.AlignCenter
+    UserRole = Qt.ItemDataRole.UserRole
+    AscendingOrder = Qt.SortOrder.AscendingOrder
 # QT5
 except :
     Dialog = Qt.Dialog
@@ -47,3 +49,5 @@ except :
     AcceptRole = QMessageBox.AcceptRole
     NoSelection = QListWidget.NoSelection
     AlignCenter = Qt.AlignCenter
+    UserRole = Qt.UserRole
+    AscendingOrder = Qt.AscendingOrder
