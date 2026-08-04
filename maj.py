@@ -116,7 +116,7 @@ class MajPlugins:
 
     def isOSGeo4W_existe(self):
         if not self.osgeo_bat.exists():
-            log(f"Fichier batch introuvable : {self.osgeo_bat}")
+            # log(f"Fichier batch introuvable : {self.osgeo_bat}")
             text = f"Fichier batch introuvable : {self.osgeo_bat}\n"
             text += f"Impossible de lancer l'installation"
             QMessageBox.critical(self.iface.mainWindow(), "Erreur", text)

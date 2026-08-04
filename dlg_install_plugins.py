@@ -1,3 +1,5 @@
+import shutil
+
 from qgis.PyQt.QtGui import QFont,QBrush, QColor,QIcon,QPixmap
 from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
 from qgis.PyQt.uic import loadUi
@@ -18,9 +20,9 @@ class InstallerDialog(QDialog):
         self.pluginsIGN = PluginsIGN()
 
         # self.dossier_profil = None
-        self.dico_plugin_from_xml = {}
+        # self.dico_plugin_from_xml = {}
         # aucun plugin n’est coché.
-        self.ischeck = False
+        # self.ischeck = False
 
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
@@ -39,6 +41,7 @@ class InstallerDialog(QDialog):
         self.tablePlugins.clear()
         self.tablePlugins.setRowCount(0)
         self.label_non_installe.setStyleSheet(f"background-color: {COLOR_MAJ}")
+        self.label_hors_profil.setStyleSheet(f"background-color: {COLOR_HORS_PROFIL}")
         self.pushButton_installer.setStyleSheet("font : bold ;background-color: #00b909; color: black;")
 
         self.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
@@ -84,8 +87,17 @@ class InstallerDialog(QDialog):
         # construction de l'url pour le profil actif
         list_plugins_profil = self.get_plugins_profil()
 
+        nb_plugins = sum(
+            len(self.pluginsIGN.get_plugins_ign_from_depot(depot))
+            for depot in ("officiel", "github")
+        )
+        progress = DownloadProgress(self, nb_plugins,"Initialisation de la liste des plugins")
+
+        compt = 0
         for depot in ("officiel", "github"):
             for name, infos in self.pluginsIGN.get_plugins_ign_from_depot(depot).items():
+                compt +=1
+                progress.update(compt, f"Initialisation : {name}")
                 version = infos["version"]
                 description = infos["description"]
                 icon = infos["icon"]
@@ -103,15 +115,11 @@ class InstallerDialog(QDialog):
                 item_name.setData(UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
                 # si le plugin n'est pas dans la liste des plugins du profil actif on le grise
                 if name not in list_plugins_profil:
-                    item_name.setBackground(QBrush(QColor(200, 200, 200)))
+                    item_name.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
                     item_name.setCheckState(Unchecked)
                     item_name.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
                     # formatage pour retrouver les dossiers de la forme "IGN_"
                     self._plugin_to_suppr.append(Path(self.parent_directory,name.replace("IGN ","IGN_")))
-
-
-
-                # self.tablePlugins.setItem(ligne, 0, item_name)
 
                 # DEPOT
                 nom_depot = ""
@@ -123,7 +131,6 @@ class InstallerDialog(QDialog):
                     nom_depot = "GitHub"
                     url_icon = icon
                 item_depot = self.creer_item(nom_depot)
-                # self.tablePlugins.setItem(ligne, 1, item_depot)
 
                 # ICON
                 icon_bytes = self.pluginsIGN.load_fichier(url_icon)
@@ -135,11 +142,9 @@ class InstallerDialog(QDialog):
                 item_version_dispo = self.creer_item(version)
                 if version_installe != version:
                     item_version_dispo.setBackground(QBrush(QColor(COLOR_MAJ)))
-                # self.tablePlugins.setItem(ligne, 2, item_version_dispo)
 
                 # VERSION INSTALLÉE
                 item_version_installe = self.creer_item(version_installe)
-                # self.tablePlugins.setItem(ligne, 3, item_version_installe)
 
                 # DESCRIPTION
                 item_descr = self.creer_item(description)
@@ -150,7 +155,7 @@ class InstallerDialog(QDialog):
                 self.tablePlugins.setItem(ligne, 3, item_version_installe)
                 self.tablePlugins.setItem(ligne, 4, item_descr)
 
-
+        progress.close()
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
@@ -238,63 +243,35 @@ class InstallerDialog(QDialog):
                 plugins_checked.append(plugin)
         return plugins_checked
 
-    # def confirme_suppr(self,plugins):
-    #     list_dossier_plugins = []
-    #     for plugin in plugins:
-    #         list_dossier_plugins.append(Path(plugin).name)
-    #
-    #     msg = QMessageBox(self)
-    #     msg.setWindowTitle("Installation...")
-    #     msg.setIcon(Information)
-    #     msg.setText(f"Plugins non inclus dans le profil souhaité :")
-    #     msg.setInformativeText("\n".join(list_dossier_plugins))
-    #     btn_supprimer = msg.addButton("-Installer les plugins cochés\n -Supprimer les plugins ci-dessus", YesRole)
-    #     btn_conserver = msg.addButton("-Installer les plugins cochés\n -Garder les plugins ci-dessus", NoRole)
-    #     btn_annuler = msg.addButton("Annuler", RejectRole)
-    #     msg.setDefaultButton(btn_annuler)
-    #     msg.exec()
-    #     if msg.clickedButton() == btn_supprimer:
-    #         return "supprimer"
-    #     if msg.clickedButton() == btn_conserver:
-    #         return "conserver"
-    #     if msg.clickedButton() == btn_annuler:
-    #         return "annuler"
-    #     return None
-
-
 
     def on_installe_plugin(self):
+        # ==========================================
+        # PLUGINS à SUPPRIMER (grisés) : on vérifie si le plugin existe encore avant de le supprimer
         for plugin in self._plugin_to_suppr:
             if not plugin.exists():
                 # si le plugin n'est pas installé, pas la peine de supprimer, on retire donc de la liste
                 if plugin in self._plugin_to_suppr:
                     self._plugin_to_suppr.remove(plugin)
 
-        # si rien à supprimer on affiche pas le dial
-        is_plugin_to_suppr = False
-        # if len(self._plugin_to_suppr) != 0:
-        #     reponse = self.confirme_suppr(self._plugin_to_suppr)
-        #     if reponse == "annuler":
-        #         return None
-        #     if reponse == "supprimer":
-        #         for dossier in self._plugin_to_suppr:
-        #             try:
-        #                 shutil.rmtree(dossier)
-        #             except Exception as e:
-        #                 print(f"Erreur lors de la suppression de {dossier} : {e}")
-        #         self.plugin_maitre.refresh_plugins()
-        #     if reponse == "conserver":
-        #         pass
+        if self.checkBox_suppr_plugins.checkState() == Checked:
+            for dossier in self._plugin_to_suppr:
+                try:
+                    shutil.rmtree(dossier)
+                except Exception as e:
+                    print(f"Erreur lors de la suppression de {dossier} : {e}")
+        # ==========================================
 
-        list_plugin_to_install = self.get_plugins_checked()
-        if len(list_plugin_to_install) == 0:
-            QMessageBox.warning(self, "Avertissement", "Aucun plugin n'est sélectionné.")
-            return None
 
         # TODO : a faire: ne pas télécharger des plugins s'ils sont deja installé si la version est identique
         # TODO meme s'ils sont cochés
-        progress = DownloadProgress(self, len(list_plugin_to_install))
-        for idx,plugin in enumerate(list_plugin_to_install,start = 1):
+        # =================================================
+        # PLUGINS à INSTALLER (cochés) : on verifie si le plugin est déjà installé et si la version est identique
+        list_plugin_to_install = self.get_plugins_checked()
+        if len(list_plugin_to_install) == 0 and len(self._plugin_to_suppr) == 0:
+            QMessageBox.warning(self, "Avertissement", "Aucun plugin à installer ou à supprimer.")
+            return None
+        progress = DownloadProgress(self, len(list_plugin_to_install),"Téléchargement des plugins")
+        for idx, plugin in enumerate(list_plugin_to_install, start=1):
             progress.update(idx, f"Téléchargement de : {plugin["name"]}")
             # téléchargement des plugins sous forme de bytes
             plugins_bytes = self.pluginsIGN.download_plugins(plugin['download_url'])
@@ -306,8 +283,16 @@ class InstallerDialog(QDialog):
 
             # extraction du zip
             self.pluginsIGN.extract_zip(self.parent_directory,chemin_zip)
+        progress.close()
 
-        self.plugin_maitre.refresh_plugins()
+        # on rafraichit la liste des plugins installés
+        # self.plugin_maitre.refresh_plugins()
+        self.tablePlugins.clearContents()
+        self.tablePlugins.setRowCount(0)
+        self._plugin_to_suppr.clear()
+
+        self.plugin_maitre.refresh_plugins()  # met à jour QGIS
+        self.remplir_dlg_plugins()
 
         text = ("Installation terminée\n\n - Veuillez redémarrer QGIS pour prendre\n"
                 "en compte les plugins")

@@ -26,6 +26,7 @@ try :
     AlignCenter = Qt.AlignmentFlag.AlignCenter
     UserRole = Qt.ItemDataRole.UserRole
     AscendingOrder = Qt.SortOrder.AscendingOrder
+    ApplicationModal = Qt.WindowModality.ApplicationModal
 # QT5
 except :
     Dialog = Qt.Dialog
@@ -51,3 +52,4 @@ except :
     AlignCenter = Qt.AlignCenter
     UserRole = Qt.UserRole
     AscendingOrder = Qt.AscendingOrder
+    ApplicationModal = Qt.ApplicationModal
