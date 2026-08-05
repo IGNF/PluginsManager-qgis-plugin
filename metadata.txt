@@ -6,8 +6,7 @@
 name=IGN PluginsManager
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
-description=IGN plugin manager for QGIS allowing the installation, update and organization of IGN extensions.
-    It detects IGN plugins (prefixed with "IGN_"), notifies users of available updates and facilitates their integration into customizable toolbars and the IGN menu.
+description=PluginsManager allowing the installation, update and organization of IGN extensions in the IGN menu and/or toolbars according to a defined profile.
 version=2.0.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
@@ -15,9 +14,9 @@ license=GNU AGPL v3
 
 about=PluginsManager is a dedicated manager for IGN plugins in QGIS.
     It allows users to:
-    - install IGN plugins from available repositories (qgis.org or GitHub)
-    - automatically detect available updates for installed IGN plugins and install new versions
-    - organize IGN plugins into IGN menu and customizable toolbars according to user needs
+    - Install IGN plugins from available repositories (qgis.org or GitHub) based on a given profile
+    - Automatically detect available updates for installed IGN plugins and install new versions
+    - Organize IGN plugins into IGN menu and customizable toolbars according to user needs
 
     The goal of this plugin is to simplify the deployment, maintenance and daily use of IGN extensions within QGIS.
 
@@ -31,9 +30,16 @@ homepage=https://ignf.github.io/PluginsManager-qgis-plugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=  v2.0.0 : Installation des plugins IGN depuis le dépôt officiel si disponible, depuis Github sinon.
-            v1.8.0 : Changement de nom
-            v1.7.3 : Notification et installation des dépendances manquantes
+changelog=
+ v2.0.0 :
+ - Installation des plugins IGN depuis le dépôt officiel si disponible, depuis Github sinon.
+ - Gestion de profil
+
+ v1.8.0 :
+ – Changement de nom
+
+ v1.7.3 :
+ – Notification et installation des dépendances manquantes
     
 # Tags are comma separated with spaces allowed
 tags=python

@@ -421,7 +421,9 @@ class PluginMaitre:
     # suppression d'un onglet (xml,barre d'outils et tabwidget)
     def supp_onglet(self, index: int):
         nom_onglet = self.dlg.tabWidget.tabText(index)
-        if affichemessageAvertissement("Avertissement", "Voulez vous vraiment supprimer cette barre d'outils ?"):
+        text = "Voulez vous vraiment supprimer la barre d'outils :"
+        text += "<span style='color:red; font-weight: bold'> " + nom_onglet + "</span> ?"
+        if affichemessageAvertissement("Avertissement", text):
             # suppression de l'onglet dans le xml
             self.suppr_ongletXML(index)
             # suppression de l'onglet dans le tabwidget

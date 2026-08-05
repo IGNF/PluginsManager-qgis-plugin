@@ -76,15 +76,14 @@ Ce plugin ajoute un menu IGN dans la barre des menus de QGIS.
 
 * Installation des plugins IGN
 ![](images/image11.png)
-Cette interface recense tous les plugins IGN disponibles dans le dépôt officiel QGIS ou dans le dépôt Github, et permet leur installation
+Cette interface recense tous les plugins IGN disponibles dans le dépôt officiel QGIS ou dans le dépôt Github, et permet leur installation en fonction du profil souhaité
  
 * Configuration : Permet de configurer l’interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d’outils).  
 ![](images/image3.png)
 
 	Ici il est possible de choisir les plugins à intégrer dans le menu IGN et / ou dans des barres d’outils.  
 Les plugins préfixés "IGN_" sont détectés automatiquement.  
-Le premier onglet concerne le menu IGN. Il n’est pas possible de le renommer, car il s’agit du menu par défaut.  
-Les autres onglets sont des barres d'outils, Il est possible de les renommer et d’en ajouter autant que nécessaire.
+
 
 - Documentation BDTopo : adffiche la documentation de la BDTopo (https://bdtopoexplorer.ign.fr/)
 - Documentation des plugins : affiche la documentation de tous les plugins IGN disponibles dans l'installation.

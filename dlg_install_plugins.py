@@ -15,14 +15,10 @@ class InstallerDialog(QDialog):
     def __init__(self,plugin_maitre,parent = None):
         super().__init__(parent)
 
+        self.list_profils = None
         self.plugin_maitre = plugin_maitre
         self.profil_actif = None
         self.pluginsIGN = PluginsIGN()
-
-        # self.dossier_profil = None
-        # self.dico_plugin_from_xml = {}
-        # aucun plugin n’est coché.
-        # self.ischeck = False
 
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
@@ -65,7 +61,7 @@ class InstallerDialog(QDialog):
         self.load_profil_actif()
 
     def init_combo_profils(self):
-        self.comboBox_profils.blockSignals(True) # bloquer le signal car additem emet currentIndexChanged
+        self.comboBox_profils.blockSignals(True) # bloquer le signal car "additem" emet currentIndexChanged
         self.comboBox_profils.clear()
         # contenu = self.pluginsIGN.load_fichier("profils")
         contenu = self.pluginsIGN.load_fichier(URL_PROFIL_GITHUB)
@@ -113,13 +109,6 @@ class InstallerDialog(QDialog):
                     check = "False"
                 item_name = self.creer_item(name,check)
                 item_name.setData(UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
-                # si le plugin n'est pas dans la liste des plugins du profil actif on le grise
-                if name not in list_plugins_profil:
-                    item_name.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_name.setCheckState(Unchecked)
-                    item_name.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
-                    # formatage pour retrouver les dossiers de la forme "IGN_"
-                    self._plugin_to_suppr.append(Path(self.parent_directory,name.replace("IGN ","IGN_")))
 
                 # DEPOT
                 nom_depot = ""
@@ -142,12 +131,29 @@ class InstallerDialog(QDialog):
                 item_version_dispo = self.creer_item(version)
                 if version_installe != version:
                     item_version_dispo.setBackground(QBrush(QColor(COLOR_MAJ)))
-
                 # VERSION INSTALLÉE
                 item_version_installe = self.creer_item(version_installe)
 
                 # DESCRIPTION
                 item_descr = self.creer_item(description)
+
+                # si le plugin n'est pas dans la liste des plugins du profil actif, on le grise
+                if name not in list_plugins_profil:
+                    item_name.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
+                    item_name.setCheckState(Unchecked)
+                    item_name.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+
+                    item_version_dispo.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
+                    item_version_dispo.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_version_installe.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
+                    item_version_installe.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_depot.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
+                    item_depot.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_descr.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
+                    item_descr.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+
+                    # formatage pour retrouver les dossiers de la forme "IGN_"
+                    self._plugin_to_suppr.append(Path(self.parent_directory, name.replace("IGN ", "IGN_")))
 
                 self.tablePlugins.setItem(ligne, 0, item_name)
                 self.tablePlugins.setItem(ligne, 1, item_depot)
@@ -166,7 +172,7 @@ class InstallerDialog(QDialog):
         texte = self.comboBox_profils.itemText(index)
         valeur = self.comboBox_profils.itemData(index)
         nouveau_profil = {'nom': texte,'fichier': valeur}
-        # si pas de changement on reecrit pas le fichier
+        # si pas de changement on réécrit pas le fichier
         if nouveau_profil == self.profil_actif:
             return
         self.profil_actif = nouveau_profil
@@ -247,29 +253,49 @@ class InstallerDialog(QDialog):
     def on_installe_plugin(self):
         # ==========================================
         # PLUGINS à SUPPRIMER (grisés) : on vérifie si le plugin existe encore avant de le supprimer
-        for plugin in self._plugin_to_suppr:
-            if not plugin.exists():
-                # si le plugin n'est pas installé, pas la peine de supprimer, on retire donc de la liste
-                if plugin in self._plugin_to_suppr:
-                    self._plugin_to_suppr.remove(plugin)
+        for plug in self._plugin_to_suppr:
+            print(f"plugin grisé : {Path(plug).name}")
 
+        # liste intermediaire pour stocker les plugins à supprimer
+        # pour ne pas modifier la liste self._plugin_to_suppr pendant l'itération
+        plugins_a_supprimer = []
+        for plugin in self._plugin_to_suppr:
+            if plugin.exists():
+                plugins_a_supprimer.append(plugin)
+        self._plugin_to_suppr = plugins_a_supprimer
+
+        # ==========================================
+
+
+        # =================================================
+        # PLUGINS à INSTALLER (cochés) : on vérifie si le plugin est déjà installé et si la version est identique
+        list_plugin_to_install = self.get_plugins_checked()
+        print(f"plugin a installer = {len(list_plugin_to_install)}")
+        print(f"plugin a supprimer = {len(self._plugin_to_suppr)}")
+
+        # conditions d'installation
+        is_installok = True
+        if self.checkBox_suppr_plugins.checkState() == Checked:
+            if len(list_plugin_to_install) == 0 and len(self._plugin_to_suppr) == 0:
+                is_installok = False
+        else:
+            if len(list_plugin_to_install) == 0:
+                is_installok = False
+
+
+        if not is_installok:
+            QMessageBox.warning(self, "Avertissement", "Aucun plugin à installer ou à supprimer.")
+            return None
+
+        # suppression des plugins grisés si la case est cochée
         if self.checkBox_suppr_plugins.checkState() == Checked:
             for dossier in self._plugin_to_suppr:
                 try:
                     shutil.rmtree(dossier)
                 except Exception as e:
-                    print(f"Erreur lors de la suppression de {dossier} : {e}")
-        # ==========================================
+                    print(f"Erreur lors de la suppression de :{Path(dossier).name}")
+                    # print(f"Erreur lors de la suppression de {Path(dossier).name} : {e}")
 
-
-        # TODO : a faire: ne pas télécharger des plugins s'ils sont deja installé si la version est identique
-        # TODO meme s'ils sont cochés
-        # =================================================
-        # PLUGINS à INSTALLER (cochés) : on verifie si le plugin est déjà installé et si la version est identique
-        list_plugin_to_install = self.get_plugins_checked()
-        if len(list_plugin_to_install) == 0 and len(self._plugin_to_suppr) == 0:
-            QMessageBox.warning(self, "Avertissement", "Aucun plugin à installer ou à supprimer.")
-            return None
         progress = DownloadProgress(self, len(list_plugin_to_install),"Téléchargement des plugins")
         for idx, plugin in enumerate(list_plugin_to_install, start=1):
             progress.update(idx, f"Téléchargement de : {plugin["name"]}")
@@ -294,8 +320,11 @@ class InstallerDialog(QDialog):
         self.plugin_maitre.refresh_plugins()  # met à jour QGIS
         self.remplir_dlg_plugins()
 
-        text = ("Installation terminée\n\n - Veuillez redémarrer QGIS pour prendre\n"
-                "en compte les plugins")
+        text = "Installation terminée<br>"
+        text += "<span style='color:red; font-weight:bold;'>"
+        text += "- Veuillez redémarrer QGIS pour prendre en compte les nouveaux plugins<br>"
+        text += "- Veuillez lancer la configuration des plugins dans le menu 'IGN'"
+        text += "</span>"
         QMessageBox.information(self, "Installation des plugins", text)
 
 
