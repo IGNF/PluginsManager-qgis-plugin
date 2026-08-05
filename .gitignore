@@ -1,4 +1,4 @@
-config_plugin_maitre/
+config_PluginsManager/
 MAJ_GITHUB/
 # Byte-compiled / optimized / DLL files
 __pycache__/
