@@ -1,14 +1,12 @@
 from qgis.PyQt.QtCore import Qt,QCoreApplication
 from qgis.PyQt.QtWidgets import QProgressDialog
 
-from .mapping_version import *
-
 class DownloadProgress:
     def __init__(self, parent, total=0,titre = ""):
         self.progress = QProgressDialog("Téléchargement en cours...", None, 0, total, parent)
         self.progress.setWindowTitle(titre)
-        self.progress.setWindowModality(WindowModal)
-        self.progress.setWindowFlags(self.progress.windowFlags() | WindowStaysOnTopHint)
+        self.progress.setWindowModality(Qt.WindowModality.WindowModal)
+        self.progress.setWindowFlags(self.progress.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
         self.progress.setMinimumDuration(0)  # Affiche immédiatement
         self.progress.setValue(0)
         self.progress.show()

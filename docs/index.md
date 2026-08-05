@@ -35,7 +35,7 @@ v2.0.0</strong></td>
   <h2 id="prerequis" style="color: white;margin:0;" >1. Prérequis</h2>
 </div>
 
-Version de QGIS : version supérieure à 3.28
+Version de QGIS : version supérieure ou égal à 3.34
 Cette version est compatible QGIS 4
 
 

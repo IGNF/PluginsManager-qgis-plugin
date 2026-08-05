@@ -1,9 +1,7 @@
-import os
 import webbrowser
-from pathlib import Path
-
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsApplication
-from .mapping_version import *
 from .constantes import *
 
 def log(message,reset=False):
@@ -27,7 +25,7 @@ def afficheerreur(titre,text):
     msg.setWindowTitle(titre)
     msg.setText(text)
     msg.setIcon(Warning)
-    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
+    msg.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
     msg.exec()
 
 def affichemessageAvertissement( titre, text):
@@ -36,11 +34,11 @@ def affichemessageAvertissement( titre, text):
 
     msg.setWindowTitle(titre)
     msg.setText(text)
-    btnAnnuler = msg.addButton("Annuler", YesRole)
+    btnAnnuler = msg.addButton("Annuler", QMessageBox.ButtonRole.YesRole)
     btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
-    btnValider = msg.addButton("Supprimer", AcceptRole)
+    btnValider = msg.addButton("Supprimer", QMessageBox.ButtonRole.AcceptRole)
     btnValider.setStyleSheet("color:green ; font-weight: bold")
-    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
+    msg.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
     msg.exec()
     if msg.clickedButton() == btnAnnuler:
         return False

@@ -1,10 +1,9 @@
 import zipfile
 from xml.etree import ElementTree as ET
 
-from qgis.PyQt.QtCore import QUrl, QEventLoop
+from qgis.PyQt.QtCore import QEventLoop
 from qgis.PyQt.QtNetwork import QNetworkRequest,QNetworkReply
 from qgis.core import Qgis,QgsNetworkAccessManager
-
 from .constantes import *
 
 

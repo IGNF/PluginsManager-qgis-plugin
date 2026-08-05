@@ -1,15 +1,14 @@
 import shutil
 
 from qgis.PyQt.QtGui import QFont,QBrush, QColor,QIcon,QPixmap
-from qgis.PyQt.QtWidgets import QDialog, QTableWidgetItem
+from qgis.PyQt.QtWidgets import QDialog,QAbstractItemView,QTableWidgetItem
 from qgis.PyQt.uic import loadUi
 
 import json
 
-
 from .fonctions import *
 from .plugins_ign import *
-from.progressbar import DownloadProgress
+from .progressbar import DownloadProgress
 
 class InstallerDialog(QDialog):
     def __init__(self,plugin_maitre,parent = None):
@@ -40,11 +39,11 @@ class InstallerDialog(QDialog):
         self.label_hors_profil.setStyleSheet(f"background-color: {COLOR_HORS_PROFIL}")
         self.pushButton_installer.setStyleSheet("font : bold ;background-color: #00b909; color: black;")
 
-        self.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
         # tablewidget
         self.tablePlugins.horizontalHeader().setStyleSheet(
             "QHeaderView::section { color: white; background-color: #00a108; font-weight: bold; }")
-        self.tablePlugins.setSelectionMode(NoSelection)
+        self.tablePlugins.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.tablePlugins.setColumnCount(5)
         self.tablePlugins.setHorizontalHeaderLabels(["Plugins disponibles","Dépôt", "Version disponible","Version installée", "Description"])
         self.tablePlugins.setColumnWidth(0, 220)
@@ -108,7 +107,7 @@ class InstallerDialog(QDialog):
                 else:
                     check = "False"
                 item_name = self.creer_item(name,check)
-                item_name.setData(UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
+                item_name.setData(Qt.ItemDataRole.UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
 
                 # DEPOT
                 nom_depot = ""
@@ -140,17 +139,17 @@ class InstallerDialog(QDialog):
                 # si le plugin n'est pas dans la liste des plugins du profil actif, on le grise
                 if name not in list_plugins_profil:
                     item_name.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_name.setCheckState(Unchecked)
-                    item_name.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_name.setCheckState(Qt.CheckState.Unchecked)
+                    item_name.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
 
                     item_version_dispo.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_version_dispo.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_version_dispo.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
                     item_version_installe.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_version_installe.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_version_installe.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
                     item_depot.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_depot.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_depot.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
                     item_descr.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    item_descr.setFlags(item_name.flags() & ~ItemIsUserCheckable & ~ItemIsEnabled)
+                    item_descr.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
 
                     # formatage pour retrouver les dossiers de la forme "IGN_"
                     self._plugin_to_suppr.append(Path(self.parent_directory, name.replace("IGN ", "IGN_")))
@@ -165,7 +164,7 @@ class InstallerDialog(QDialog):
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
-        self.tablePlugins.sortItems(0, AscendingOrder)
+        self.tablePlugins.sortItems(0, Qt.SortOrder.AscendingOrder)
 
     def on_profil_changed(self,index):
         self._plugin_to_suppr.clear()
@@ -230,11 +229,11 @@ class InstallerDialog(QDialog):
 
         item = QTableWidgetItem(texte)
         item.setFont(font)
-        item.setFlags(item.flags() & ~ItemIsEditable)
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
         if check == "True":
-            item.setCheckState(Checked)
+            item.setCheckState(Qt.CheckState.Checked)
         elif check == "False":
-            item.setCheckState(Unchecked)
+            item.setCheckState(Qt.CheckState.Unchecked)
         else:
             pass
         return item
@@ -243,8 +242,8 @@ class InstallerDialog(QDialog):
         plugins_checked = []
         for row in range(self.tablePlugins.rowCount()):
             item = self.tablePlugins.item(row, 0)
-            if item is not None and item.checkState() == Checked:
-                plugin = item.data(UserRole).copy()  # Récupère le dictionnaire (copie) stocké dans l'item
+            if item is not None and item.checkState() == Qt.CheckState.Checked:
+                plugin = item.data(Qt.ItemDataRole.UserRole).copy()  # Récupère le dictionnaire (copie) stocké dans l'item
                 plugin["name"] = item.text()  # Ajoute le nom du plugin au dictionnaire
                 plugins_checked.append(plugin)
         return plugins_checked
@@ -275,7 +274,7 @@ class InstallerDialog(QDialog):
 
         # conditions d'installation
         is_installok = True
-        if self.checkBox_suppr_plugins.checkState() == Checked:
+        if self.checkBox_suppr_plugins.checkState() == Qt.CheckState.Checked:
             if len(list_plugin_to_install) == 0 and len(self._plugin_to_suppr) == 0:
                 is_installok = False
         else:
@@ -288,7 +287,7 @@ class InstallerDialog(QDialog):
             return None
 
         # suppression des plugins grisés si la case est cochée
-        if self.checkBox_suppr_plugins.checkState() == Checked:
+        if self.checkBox_suppr_plugins.checkState() == Qt.CheckState.Checked:
             for dossier in self._plugin_to_suppr:
                 try:
                     shutil.rmtree(dossier)

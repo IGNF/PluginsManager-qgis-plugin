@@ -4,7 +4,7 @@
 
 [general]
 name=IGN PluginsManager
-qgisMinimumVersion=3.0
+qgisMinimumVersion=3.34
 qgisMaximumVersion=4.99
 description=PluginsManager allowing the installation, update and organization of IGN extensions in the IGN menu and/or toolbars according to a defined profile.
 version=2.0.0

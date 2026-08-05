@@ -25,7 +25,7 @@
 import os.path
 
 from qgis.PyQt.QtCore import QSize
-from qgis.PyQt.QtWidgets import QInputDialog, QLabel,QAction,QListWidgetItem,QMenu
+from qgis.PyQt.QtWidgets import QInputDialog, QLabel,QAction,QListWidgetItem,QMenu,QListWidget
 from qgis.utils import plugins
 
 from .maj import *
@@ -219,7 +219,7 @@ class PluginMaitre:
             nom_onglet = self.dlg.tabWidget.tabText(onglet)
             widgetlist = self.dlg.tabWidget.widget(onglet)
             for index in range(widgetlist.count()):
-                if widgetlist.item(index).checkState() == Checked:
+                if widgetlist.item(index).checkState() == Qt.CheckState.Checked:
                     list_plugin_toolbar_coche.append(widgetlist.item(index).text())
 
             # suppression de tous les plugins cochés par barre d'outils du xml
@@ -326,7 +326,6 @@ class PluginMaitre:
         onglets = root.findall(".//onglet")
         for onglet in onglets:
             id_onglet = onglet.get("id")
-            listWidget = QListWidget()
             if id_onglet == MENU_IGN:
                 # ajout dans le menu IGN
                 self.add_allpluginIGN_in_widgetlist(self.dlg.listWidget_menu_IGN)
@@ -342,9 +341,9 @@ class PluginMaitre:
                 icon_path = Path(plugins_dir, plugin, "icons", "icon_principal.png")
                 itemtoolbar.setIcon(QIcon(str(icon_path)))
                 listwidget.setIconSize(QSize(20, 20))
-                itemtoolbar.setFlags(ItemIsEnabled | ItemIsUserCheckable)
+                itemtoolbar.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
                 itemtoolbar.setText(plugin)
-                itemtoolbar.setCheckState(Unchecked)
+                itemtoolbar.setCheckState(Qt.CheckState.Unchecked)
                 listwidget.addItem(itemtoolbar)
 
     # ==================================================
@@ -373,21 +372,21 @@ class PluginMaitre:
 
             # pour chaque widgetlist, on coche
             for plugin_coche in list_coche:
-                item_find = widgetlist.findItems(plugin_coche, MatchExactly)
+                item_find = widgetlist.findItems(plugin_coche, Qt.MatchFlag.MatchExactly)
                 if len(item_find) != 0:
                     item_find[0].setText(plugin_coche)
                     item_find[0].setSelected(True)
-                    item_find[0].setCheckState(Checked)
+                    item_find[0].setCheckState(Qt.CheckState.Checked)
 
     def init_plugin_coche_in_menu_ign(self):
         # recuperation des plugins du xml pour le menu IGN
         list_coche = self.get_plugin_coche_fromXML(MENU_IGN)
         for plugin_coche in list_coche:
-            item_find = self.dlg.listWidget_menu_IGN.findItems(plugin_coche, MatchExactly)
+            item_find = self.dlg.listWidget_menu_IGN.findItems(plugin_coche, Qt.MatchFlag.MatchExactly)
             if len(item_find) != 0:
                 item_find[0].setText(plugin_coche)
                 item_find[0].setSelected(True)
-                item_find[0].setCheckState(Checked)
+                item_find[0].setCheckState(Qt.CheckState.Checked)
 
 
     # ==================================================
@@ -508,7 +507,7 @@ class PluginMaitre:
         dlgAProposDe = QDialog()
         ui_file = Path(__file__).parent / "ui" / "aproposde.ui"
         loadUi(ui_file, dlgAProposDe)
-        dlgAProposDe.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
+        dlgAProposDe.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
         dlgAProposDe.setWindowTitle(f"{TITRE}")
         dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
         dlgAProposDe.exec()
@@ -597,6 +596,7 @@ class PluginMaitre:
 
     # ==================================================
     def run(self):
+
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start:
@@ -607,13 +607,13 @@ class PluginMaitre:
 
             self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
-            self.dlg.setWindowFlags(Dialog | WindowTitleHint | WindowCloseButtonHint)
+            self.dlg.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
 
             # dial d'ajout d'onglet
             self.dlgaddonglet = QDialog()
             ui_file = Path(__file__).parent / "ui" / "add_onglet.ui"
             loadUi(ui_file, self.dlgaddonglet)
-            self.dlgaddonglet.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
+            self.dlgaddonglet.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
             self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
 
             # bouton actualiser la toolbar
