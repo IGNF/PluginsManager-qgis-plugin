@@ -1,5 +1,8 @@
 import webbrowser
-from qgis.PyQt.QtWidgets import QMessageBox
+from configparser import ConfigParser
+
+from qgis.PyQt.uic import loadUi
+from qgis.PyQt.QtWidgets import QMessageBox,QDialog
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsApplication
 from .constantes import *
@@ -50,19 +53,14 @@ def afficheDoc():
     webbrowser.open("https://ignf.github.io/PluginsManager-qgis-plugin/")
 
 
-def get_info_plugins_installe(plugin_name,info):
-    rep_plugin_qgis  = QgsApplication.qgisSettingsDirPath() + "python/plugins/"
-    plugin_name = plugin_name.replace("IGN ", PREFIXE_PLUGIN_IGN)
-    fic_metadata = os.path.join(rep_plugin_qgis, plugin_name, "metadata.txt")
-    if os.path.exists(fic_metadata):
-        with open(fic_metadata, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.startswith(f"{info}="):
-                    return line.strip().split("=")[1]
-    return None
+# ==================================================
+# ouverture du dialogue "à propos de..."
+def apropos(self):
+    dlgAProposDe = QDialog()
+    ui_file = Path(__file__).parent / "ui" / "aproposde.ui"
+    loadUi(ui_file, dlgAProposDe)
+    dlgAProposDe.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint)
+    dlgAProposDe.setWindowTitle(f"{TITRE}")
+    dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
+    dlgAProposDe.exec()
 
-# def load_profils_json():
-#     url = QUrl(f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json?nocache=1")
-#     with open(url, "r", encoding="utf-8") as f:
-#         profils = json.load(f)
-#     return profils
