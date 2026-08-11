@@ -137,6 +137,7 @@ class PluginMaitre:
         # ************************************************************************
         # menu "Documentation plugins"
         self.menu.addMenu(self.menu_doc_plugins)
+        self.menu_doc_plugins.clear()
         for plugin in self.plugins_installes():
             # prise en compte pour la doc des plugins IGN uniquement + les plugins génériques (exemple : MultiViewManager)
             if PREFIXE_PLUGIN_IGN in plugin or plugin in PLUGINS_HORS_IGN:
@@ -294,7 +295,6 @@ class PluginMaitre:
                     PLUGIN_LIEN_DOC: lien_doc,
                     PLUGIN_ICON: icon
                 }
-        # print(self.installer.pluginsIGN.get_plugins_ign_from_depot("github"))
         return dico_plugins_installes
 
     def plugins_installes(self):

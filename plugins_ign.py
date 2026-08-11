@@ -64,7 +64,6 @@ class PluginsIGN:
     # retourne tous les plugins disponibles dans les dépots officiel et github, avec leurs infos (version, url de téléchargement, description, icône)
     def get_plugins_ign_from_depot(self,type_depot) -> dict:
         self.get_all_plugins_name_dispo()
-        # print(f"all plugins dispo from all_plugins.xml = {self._all_plugins_name_dispo}")
         if self._plugins_xml[type_depot] is None:
             if type_depot == "officiel":
                 url = self.get_url_depot_officiel()

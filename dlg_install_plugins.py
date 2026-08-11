@@ -163,7 +163,6 @@ class InstallerDialog(QDialog):
                     # formatage pour retrouver les dossiers de la forme "IGN_"
                     if self.plugin_maitre.plugins_installes().get(name) is not None:
                         self._plugin_to_suppr.append(Path(self.parent_directory, self.plugin_maitre.plugins_installes().get(name)[PLUGIN_REP]))
-                        print(f"plugin a griser ={Path(self.parent_directory, self.plugin_maitre.plugins_installes().get(name)[PLUGIN_REP])} ")
 
                 self.tablePlugins.setItem(ligne, 0, item_name)
                 self.tablePlugins.setItem(ligne, 1, item_depot)
@@ -202,7 +201,6 @@ class InstallerDialog(QDialog):
             return []
         # recuperation de la liste des plugins correspondant au profil actif
         fic_xml = self.profil_actif['fichier']
-        print(f"fic_xml = {fic_xml}")
         url = QUrl(REP_PLUGIN_GITHUB).resolved(QUrl(fic_xml)) # construction de l'url
         xml = self.pluginsIGN.load_fichier(url)
 
@@ -278,8 +276,6 @@ class InstallerDialog(QDialog):
         # =================================================
         # PLUGINS à INSTALLER (cochés) : on vérifie si le plugin est déjà installé et si la version est identique
         list_plugin_to_install = self.get_plugins_checked()
-        # print(f"plugin a installer = {len(list_plugin_to_install)}")
-        # print(f"plugin a supprimer = {len(self._plugin_to_suppr)}")
 
         # conditions d'installation
         is_installok = True
@@ -301,8 +297,7 @@ class InstallerDialog(QDialog):
                 try:
                     shutil.rmtree(dossier)
                 except Exception as e:
-                    print(f"Erreur lors de la suppression de :{Path(dossier).name}")
-                    # print(f"Erreur lors de la suppression de {Path(dossier).name} : {e}")
+                    print(f"Erreur lors de la suppression de {Path(dossier).name} : {e}")
 
         progress = DownloadProgress(parent = self,
                                     progress_bar=self.progressBar,
@@ -311,7 +306,6 @@ class InstallerDialog(QDialog):
 
 
         for idx, plugin in enumerate(list_plugin_to_install, start=1):
-            print(f"Téléchargement de : {plugin['name']} depuis {plugin['download_url']}")
             progress.setValue(idx)
             progress.setLabel(f"Téléchargement de : {plugin['name']}")
             # téléchargement des plugins sous forme de bytes
