@@ -53,3 +53,18 @@ CUSTOM_WIDGETS = (
 
     "font-weight: bold"
 )
+
+PROGRESS = """
+    QProgressBar {
+        border: 1px solid palette(mid);
+        border-radius: 3px;
+        background: palette(base);
+        text-align: center;
+        height: 16px;
+    }
+
+    QProgressBar::chunk {
+        background: palette(highlight);
+        border-radius: 2px;
+    }
+"""

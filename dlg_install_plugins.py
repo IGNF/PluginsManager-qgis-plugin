@@ -28,6 +28,9 @@ class InstallerDialog(QDialog):
         ui_file = Path(__file__).parent / "ui" / "installer.ui"
         loadUi(ui_file, self)
 
+        self.label_progress.hide()
+        self.progressBar.hide()
+
         self.pushButton_installer.clicked.connect(self.on_installe_plugin)
         self.comboBox_profils.currentIndexChanged.connect(self.on_profil_changed)
 
@@ -60,7 +63,6 @@ class InstallerDialog(QDialog):
     def init_combo_profils(self):
         self.comboBox_profils.blockSignals(True) # bloquer le signal car "additem" emet currentIndexChanged
         self.comboBox_profils.clear()
-        # contenu = self.pluginsIGN.load_fichier("profils")
         contenu = self.pluginsIGN.load_fichier(URL_PROFIL_GITHUB)
         self.list_profils = json.loads(contenu.decode("utf-8"))
         for profil,fichier in self.list_profils.items():
@@ -79,21 +81,23 @@ class InstallerDialog(QDialog):
         self.tablePlugins.setSortingEnabled(False)
         # construction de l'url pour le profil actif
         list_plugins_profil = self.get_plugins_profil()
-        print(f"plugins du profil actif = {list_plugins_profil}")
 
         nb_plugins = sum(
             len(self.pluginsIGN.get_plugins_ign_from_depot(depot))
             for depot in ("officiel", "github")
         )
-        progress = DownloadProgress(self, nb_plugins,"Initialisation de la liste des plugins")
-
-        print(f"plugins installés = {self.plugin_maitre.plugins_installes().keys()}")
+        # progress = DownloadProgress(self,None, nb_plugins,"Initialisation de la liste des plugins")
+        progress = DownloadProgress(parent=self,
+                                    progress_bar=None,
+                                    total=nb_plugins,
+                                    label=None)
+        progress.setTitre("Initialisation...")
 
         compt = 0
         for depot in ("officiel", "github"):
             for name, infos in self.pluginsIGN.get_plugins_ign_from_depot(depot).items():
                 compt +=1
-                progress.update(compt, f"Initialisation : {name}")
+                progress.setValue(compt, f"{name}")
                 version = infos["version"]
                 description = infos["description"]
                 icon = infos["icon"]
@@ -167,7 +171,7 @@ class InstallerDialog(QDialog):
                 self.tablePlugins.setItem(ligne, 3, item_version_installe)
                 self.tablePlugins.setItem(ligne, 4, item_descr)
 
-        progress.close()
+        progress.setClose()
         # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
         self.tablePlugins.setUpdatesEnabled(True)
         self.tablePlugins.setSortingEnabled(True)
@@ -300,10 +304,16 @@ class InstallerDialog(QDialog):
                     print(f"Erreur lors de la suppression de :{Path(dossier).name}")
                     # print(f"Erreur lors de la suppression de {Path(dossier).name} : {e}")
 
-        progress = DownloadProgress(self, len(list_plugin_to_install),"Téléchargement des plugins")
+        progress = DownloadProgress(parent = self,
+                                    progress_bar=self.progressBar,
+                                    total=len(list_plugin_to_install),
+                                    label=self.label_progress)
+
+
         for idx, plugin in enumerate(list_plugin_to_install, start=1):
             print(f"Téléchargement de : {plugin['name']} depuis {plugin['download_url']}")
-            progress.update(idx, f"Téléchargement de : {plugin["name"]}")
+            progress.setValue(idx)
+            progress.setLabel(f"Téléchargement de : {plugin['name']}")
             # téléchargement des plugins sous forme de bytes
             plugins_bytes = self.pluginsIGN.download_plugins(plugin['download_url'])
             if plugins_bytes is None:
@@ -316,7 +326,7 @@ class InstallerDialog(QDialog):
 
             # extraction du zip
             self.pluginsIGN.extract_zip(self.parent_directory,chemin_zip)
-        progress.close()
+        progress.setClose()
 
         # on rafraichit la liste des plugins installés
         self.plugin_maitre._plugins_installes = self.plugin_maitre.get_dico_plugin_installes()
@@ -335,7 +345,7 @@ class InstallerDialog(QDialog):
         QMessageBox.information(self, "Installation des plugins", text)
 
 
-        return progress
+
 
 
 
