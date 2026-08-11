@@ -9,7 +9,7 @@ MENU_IGN = "menu IGN"
 PREFIXE_PLUGIN_IGN = "IGN "
 
 COLOR_MAJ = "#FFF176"
-COLOR_COMBO = "#bababa"
+# COLOR_COMBO = "#bababa"
 COLOR_NON_INSTALLE = "#ff6e6e"
 COLOR_HORS_PROFIL = "#c8c8c8"
 

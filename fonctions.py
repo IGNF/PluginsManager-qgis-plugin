@@ -1,10 +1,8 @@
 import webbrowser
-from configparser import ConfigParser
 
 from qgis.PyQt.uic import loadUi
 from qgis.PyQt.QtWidgets import QMessageBox,QDialog
 from qgis.PyQt.QtCore import Qt
-from qgis.core import QgsApplication
 from .constantes import *
 
 def log(message,reset=False):
@@ -19,6 +17,12 @@ def log(message,reset=False):
     mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
     with open(fichier, mode, encoding="utf-8") as f:
         f.write(f"{message}\n")
+
+def affiche_doc(lien_doc):
+    if not lien_doc or not lien_doc.startswith("https://"):
+        QMessageBox.warning(None, "Avertissement", f"La documentation est introuvable")
+    else:
+        webbrowser.open(lien_doc)
 
 def affiches_spec_bdtopo():
     webbrowser.open("https://bdtopoexplorer.ign.fr/")

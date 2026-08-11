@@ -144,7 +144,7 @@ class PluginMaitre:
                 icon_path = Path(parent_directory, self.plugins_installes()[plugin][PLUGIN_REP], self.plugins_installes()[plugin][PLUGIN_ICON])
                 doc_plugin = QAction(QIcon(str(icon_path)),f"{plugin}", self.iface.mainWindow())
                 lien_doc = self.plugins_installes()[plugin][PLUGIN_LIEN_DOC]
-                doc_plugin.triggered.connect(lambda *_, lien=lien_doc: webbrowser.open(str(lien)))
+                doc_plugin.triggered.connect(lambda *_, lien=lien_doc: affiche_doc(lien))
                 self.menu_doc_plugins.addAction(doc_plugin)
         self.menu.addSeparator()
 

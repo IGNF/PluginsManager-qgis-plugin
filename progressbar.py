@@ -35,7 +35,6 @@ class DownloadProgress:
                 self.label.setText(libelle)
             elif self.dialog is not None:
                 self.dialog.setLabelText(libelle)
-                print(libelle)
         QCoreApplication.processEvents()
 
     def setLabel(self,libelle):

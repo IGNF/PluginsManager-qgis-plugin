@@ -1,9 +1,11 @@
 import zipfile
+from html import unescape
 from xml.etree import ElementTree as ET
 
 from qgis.PyQt.QtCore import QEventLoop
 from qgis.PyQt.QtNetwork import QNetworkRequest,QNetworkReply
 from qgis.core import Qgis,QgsNetworkAccessManager
+
 from .constantes import *
 
 
@@ -90,10 +92,11 @@ class PluginsIGN:
                     continue
 
             plugins[name] = {"version": plugin.attrib.get("version"),
-                                "download_url": plugin.findtext("download_url"),
-                                "description": plugin.findtext("description"),
-                                "icon" : plugin.findtext("icon")
+                                "download_url": plugin.findtext("download_url")or "",
+                                "description" : unescape(plugin.findtext("description") or ""), # unescape -> gestion des caractères spéciaux
+                                "icon" : plugin.findtext("icon") or ""
                                  }
+
         # Plugins IGN absents du dépôt officiel
         # ceux-ci seront à télécharger depuis github
         if type_depot == "officiel":

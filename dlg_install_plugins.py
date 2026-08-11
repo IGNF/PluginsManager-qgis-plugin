@@ -1,7 +1,7 @@
 import shutil
 
 from qgis.PyQt.QtGui import QFont,QBrush, QColor,QIcon,QPixmap
-from qgis.PyQt.QtWidgets import QDialog,QAbstractItemView,QTableWidgetItem
+from qgis.PyQt.QtWidgets import QAbstractItemView,QTableWidgetItem
 
 import json
 
@@ -71,7 +71,7 @@ class InstallerDialog(QDialog):
         self.comboBox_profils.setStyleSheet("""
         QComboBox {
             font-weight: bold;
-            color: red;
+            color: blue;
         }
         """)
 
@@ -86,7 +86,6 @@ class InstallerDialog(QDialog):
             len(self.pluginsIGN.get_plugins_ign_from_depot(depot))
             for depot in ("officiel", "github")
         )
-        # progress = DownloadProgress(self,None, nb_plugins,"Initialisation de la liste des plugins")
         progress = DownloadProgress(parent=self,
                                     progress_bar=None,
                                     total=nb_plugins,
@@ -331,12 +330,15 @@ class InstallerDialog(QDialog):
         self.plugin_maitre.refresh_plugins()  # met à jour QGIS
         self.remplir_dlg_plugins()
 
-        text = "Installation terminée<br>"
-        text += "<span style='color:red; font-weight:bold;'>"
+        text = "<span style='color:blue; font-weight:bold;font-size:14px;'>"
+        text += "Installation terminée<br><br>"
+        text += "</span>"
+        text += "<span style='font-weight:bold;'>"
         text += "- Veuillez redémarrer QGIS pour activer les nouveaux plugins<br>"
         text += "- Veuillez lancer la configuration des barres d'outils des plugins dans le menu 'IGN' -> 'Configuration'"
         text += "</span>"
         QMessageBox.information(self, "Installation des plugins", text)
+        return None
 
 
 

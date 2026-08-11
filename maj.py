@@ -1,3 +1,4 @@
+from qgis.core import QgsApplication
 
 from .dlg_install_plugins import *
 from .constantes import *
