@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Installation des plugins QGIS (IGN)</string>
+   <string>Installation des plugins IGN</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -20,16 +20,6 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="8">
-      <widget class="QTableWidget" name="tablePlugins"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Profil souhaité : </string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="3">
       <widget class="QLabel" name="label_non_installe">
        <property name="minimumSize">
@@ -52,43 +42,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string> : Nouvelle version disponible</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="6">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="2">
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="comboBox_profils"/>
-     </item>
-     <item row="2" column="7">
       <widget class="QPushButton" name="pushButton_installer">
        <property name="maximumSize">
         <size>
@@ -101,13 +55,46 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="7">
+     <item row="2" column="4">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string> : Nouvelle version disponible</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBox_profils"/>
+     </item>
+     <item row="1" column="6">
       <widget class="QCheckBox" name="checkBox_suppr_plugins">
        <property name="text">
-        <string>Désinstaller les plugins grisés</string>
+        <string>Désinstaller les plugins hors profil</string>
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="7">
+      <widget class="QTableWidget" name="tablePlugins"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Profil souhaité : </string>
        </property>
       </widget>
      </item>
@@ -137,6 +124,36 @@
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string> : Plugins hors profil</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="4" column="0" colspan="6">
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="6">
+      <widget class="QLabel" name="label_progress">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>

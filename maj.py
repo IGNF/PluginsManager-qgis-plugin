@@ -1,3 +1,4 @@
+from qgis.core import QgsApplication
 
 from .dlg_install_plugins import *
 from .constantes import *
@@ -24,9 +25,8 @@ class MajPlugins:
         loadUi(str(ui_file), self.dlgMaj)
         icon_path = Path(__file__).parent /"icons"/ "icon.png"
         self.dlgMaj.setWindowIcon(QIcon(str(icon_path)))
-        # self.dlgMaj.setWindowFlags(Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowStaysOnTopHint)
 
-        self.dlgMaj.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
+        self.dlgMaj.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint)
 
         self.dlgMaj.tableWidget_maj.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.dlgMaj.tableWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -50,13 +50,9 @@ class MajPlugins:
         # et afficher une notification si une mise à jour est disponible
         self.init_dial_maj()
         is_maj = False
-        # for nom, (version, description, lien) in self.plugins_xml.items():
         for nom, info in dico_plugins.items():
-            print(f"{nom}-{info["version"]}")
-            version_local = get_info_plugins_installe(nom, "version")
+            version_local = self.installer.plugin_maitre.plugins_installes().get(nom, {}).get(PLUGIN_VERSION)
             if version_local != info["version"]:
-                print(f"Mise à jour disponible pour {nom} : version locale : {version_local}, version disponible : {info["version"]}")
-                # self.dlgMaj.listWidget_maj.addItem(nom)
                 self.dlgMaj.tableWidget_maj.insertRow(0)
                 item_version = QTableWidgetItem(info["version"])
                 item_version.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -65,7 +61,7 @@ class MajPlugins:
                 is_maj = True
         if is_maj:
             self.dlgMaj.tableWidget_maj.resizeColumnsToContents()
-            self.dlgMaj.show()
+            self.dlgMaj.exec()
 
     def on_installe_maj_plugins(self):
         self.fermeture_dialogue()

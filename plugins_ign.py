@@ -1,9 +1,11 @@
 import zipfile
-from xml.etree import ElementTree as ET
+from html import unescape
+from xml.etree import ElementTree as ET # nosec B405
 
 from qgis.PyQt.QtCore import QEventLoop
 from qgis.PyQt.QtNetwork import QNetworkRequest,QNetworkReply
 from qgis.core import Qgis,QgsNetworkAccessManager
+
 from .constantes import *
 
 
@@ -23,6 +25,14 @@ class PluginsIGN:
 
     def load_fichier(self, url):
         request = QNetworkRequest(QUrl(url))
+        # Ne pas utiliser le cache Qt
+        request.setAttribute(
+            QNetworkRequest.Attribute.CacheLoadControlAttribute,
+            QNetworkRequest.CacheLoadControl.AlwaysNetwork
+        )
+        request.setRawHeader(b"Cache-Control", b"no-cache, no-store, must-revalidate")
+        request.setRawHeader(b"Pragma", b"no-cache")
+        request.setRawHeader(b"Expires", b"0")
         reply = QgsNetworkAccessManager.instance().get(request)
         loop = QEventLoop()
         reply.finished.connect(loop.quit)
@@ -46,22 +56,23 @@ class PluginsIGN:
                 return None
         return self._plugins_xml[depot]
 
-
-    def get_all_plugins_dispo(self):
+    # recuperation du nom de tous les plugins dans all_plugins.xml de GitHub
+    def get_all_plugins_name_dispo(self):
         if self._all_plugins_name_dispo is None:
             xml = self.get_xml("github")
             if not xml:
                 return set()
-            root = ET.fromstring(xml)
-            self._all_plugins_name_dispo = {
-                plugin.attrib["name"]
-                for plugin in root.findall("pyqgis_plugin")
-            }
+            root = ET.fromstring(xml) # nosec B314
+            self._all_plugins_name_dispo = []
+            for plugin in root.findall("pyqgis_plugin"):
+                self._all_plugins_name_dispo.append(plugin.attrib["name"])
         return self._all_plugins_name_dispo
 
+    # retourne tous les plugins disponibles dans les dépots officiel et github, avec leurs infos (version, url de téléchargement, description, icône)
+    # lecture des infos des plugins officiels dans le xml du depot qgis
+    # lecture des infos des plugins github dans all_plugins.xml sur github
     def get_plugins_ign_from_depot(self,type_depot) -> dict:
-        # print(f"all plugins dispo = {self.get_all_plugins_dispo()}")
-        self._all_plugins_name_dispo = self.get_all_plugins_dispo()
+        self.get_all_plugins_name_dispo()
         if self._plugins_xml[type_depot] is None:
             if type_depot == "officiel":
                 url = self.get_url_depot_officiel()
@@ -74,7 +85,7 @@ class PluginsIGN:
 
         plugins = {}
 
-        root = ET.fromstring(xml)
+        root = ET.fromstring(xml) # nosec B314
         for plugin in root.findall("pyqgis_plugin"):
             name = plugin.attrib.get("name")
 
@@ -86,12 +97,12 @@ class PluginsIGN:
             elif type_depot == "github":
                 if name not in self.list_plugins_github:
                     continue
-
             plugins[name] = {"version": plugin.attrib.get("version"),
-                                "download_url": plugin.findtext("download_url"),
-                                "description": plugin.findtext("description"),
-                                "icon" : plugin.findtext("icon")
+                                "download_url": plugin.findtext("download_url")or "",
+                                "description" : unescape(plugin.findtext("description") or ""), # unescape -> gestion des caractères spéciaux
+                                "icon" : plugin.findtext("icon") or ""
                                  }
+
         # Plugins IGN absents du dépôt officiel
         # ceux-ci seront à télécharger depuis github
         if type_depot == "officiel":
@@ -103,17 +114,17 @@ class PluginsIGN:
         reply = QgsNetworkAccessManager.instance().get(request)
         loop = QEventLoop()
         reply.finished.connect(loop.quit)
-        loop.exec() # bloque jusqu'à la fin du telechargement
+        loop.exec() # bloque jusqu'à la fin du téléchargement
         try:
             err = reply.error()
             if err != QNetworkReply.NetworkError.NoError:
                 return None
-            return bytes(reply.readAll()) # le fichier est telechargé sous forme de bytes
+            return bytes(reply.readAll()) # le fichier est téléchargé sous forme de bytes
         finally:
             reply.deleteLater()
 
     def extract_zip(self,rep_dest,fic_zip):
-        # Déziper dans le dossier des plugins
+        # Dézipper dans le dossier des plugins
         try:
             with zipfile.ZipFile(fic_zip, 'r') as zip_ref:
                 zip_ref.extractall(rep_dest)
