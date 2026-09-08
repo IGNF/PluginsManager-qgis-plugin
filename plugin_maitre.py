@@ -139,6 +139,8 @@ class PluginMaitre:
         self.menu.addMenu(self.menu_doc_plugins)
         self.menu_doc_plugins.clear()
         for plugin in self.plugins_installes():
+            if plugin is None:
+                continue
             # prise en compte pour la doc des plugins IGN uniquement + les plugins génériques (exemple : MultiViewManager)
             if PREFIXE_PLUGIN_IGN in plugin or plugin in PLUGINS_HORS_IGN:
                 icon_path = Path(parent_directory, self.plugins_installes()[plugin][PLUGIN_REP], self.plugins_installes()[plugin][PLUGIN_ICON])
@@ -577,7 +579,6 @@ class PluginMaitre:
         list_plugins_to_install = {}
         for depot in ("officiel", "github"):
             for name, infos in self.installer.pluginsIGN.get_plugins_ign_from_depot(depot).items():
-                # version_installe = get_info_plugins_installe(name,"version")
                 version_installe = self.plugins_installes().get(name, {}).get(PLUGIN_VERSION)
                 if version_installe is not None and version_installe != infos["version"]:
                     list_plugins_to_install[name] = {"version" : infos["version"],

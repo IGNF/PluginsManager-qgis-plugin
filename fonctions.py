@@ -31,13 +31,13 @@ def afficheerreur(titre,text):
     msg = QMessageBox()
     msg.setWindowTitle(titre)
     msg.setText(text)
-    msg.setIcon(Warning)
+    msg.setIcon(QMessageBox.Icon.Warning)
     msg.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
     msg.exec()
 
 def affichemessageAvertissement( titre, text):
     msg = QMessageBox()
-    msg.setIcon(Warning)
+    msg.setIcon(QMessageBox.Icon.Warning)
 
     msg.setWindowTitle(titre)
     msg.setText(text)
