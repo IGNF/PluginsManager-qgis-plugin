@@ -128,6 +128,12 @@ class PluginsIGN:
         try:
             with zipfile.ZipFile(fic_zip, 'r') as zip_ref:
                 zip_ref.extractall(rep_dest)
+                fichiers = zip_ref.namelist()
+                # Récupérer le premier dossier racine
+                dossier = Path(fichiers[0]).parts[0]
+            # Supprimer le fichier zip
+            os.remove(fic_zip)
+            return Path(rep_dest) / dossier
         except zipfile.BadZipFile:
             print(f"ZIP corrompu : {fic_zip}")
         except FileNotFoundError:
@@ -137,7 +143,7 @@ class PluginsIGN:
         except Exception as e:
             print(f"Erreur dézip : {e}")
 
-        # Supprimer le fichier zip
-        os.remove(fic_zip)
+        return None
+
 
 

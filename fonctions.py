@@ -1,4 +1,7 @@
 import webbrowser
+import urllib.request
+import urllib.error
+import json
 
 from qgis.PyQt.uic import loadUi
 from qgis.PyQt.QtWidgets import QMessageBox,QDialog
@@ -42,9 +45,9 @@ def affichemessageAvertissement( titre, text):
     msg.setWindowTitle(titre)
     msg.setText(text)
     btnAnnuler = msg.addButton("Annuler", QMessageBox.ButtonRole.YesRole)
-    btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
+    # btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
     btnValider = msg.addButton("Supprimer", QMessageBox.ButtonRole.AcceptRole)
-    btnValider.setStyleSheet("color:green ; font-weight: bold")
+    # btnValider.setStyleSheet("color:green ; font-weight: bold")
     msg.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
     msg.exec()
     if msg.clickedButton() == btnAnnuler:
@@ -67,4 +70,33 @@ def apropos(self):
     dlgAProposDe.setWindowTitle(f"{TITRE}")
     dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
     dlgAProposDe.exec()
+
+def get_localisation_ip():
+    # Active les proxies système (PAC/WPAD)
+    proxies = urllib.request.getproxies()
+
+    proxy_handler = urllib.request.ProxyHandler(proxies)
+    opener = urllib.request.build_opener(proxy_handler)
+    urllib.request.install_opener(opener)
+
+    try:
+        req = urllib.request.Request(
+            "https://ipinfo.io/json",
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        return {
+            "ip": data.get("ip"),
+            "pays": data.get("country"),
+            "region": data.get("region"),
+            "ville": data.get("city"),
+            "organisation": data.get("org"),
+        }
+
+    except Exception as e:
+        print(f"Erreur géolocalisation IP : {e}")
+        return None
+
 

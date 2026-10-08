@@ -6,9 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1000</width>
     <height>408</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1500</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Installation des plugins IGN</string>
@@ -20,65 +38,59 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="3">
-      <widget class="QLabel" name="label_non_installe">
+     <item row="2" column="0" colspan="4">
+      <widget class="QTableWidget" name="tablePlugins">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="4">
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>24</number>
        </property>
       </widget>
      </item>
-     <item row="2" column="6">
-      <widget class="QPushButton" name="pushButton_installer">
-       <property name="maximumSize">
-        <size>
-         <width>250</width>
-         <height>16777215</height>
-        </size>
-       </property>
+     <item row="4" column="0" colspan="4">
+      <widget class="QLabel" name="label_progress">
        <property name="text">
-        <string>Installer les plugins sélectionnés ...</string>
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string> : Nouvelle version disponible</string>
-       </property>
-      </widget>
+     <item row="1" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Filtrer les plugins par profil :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_profils"/>
+       </item>
+      </layout>
      </item>
-     <item row="1" column="2">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox_profils"/>
-     </item>
-     <item row="1" column="6">
+     <item row="3" column="2">
       <widget class="QCheckBox" name="checkBox_suppr_plugins">
        <property name="text">
         <string>Désinstaller les plugins hors profil</string>
@@ -88,72 +100,16 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0" colspan="7">
-      <widget class="QTableWidget" name="tablePlugins"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Profil souhaité : </string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
-      <widget class="QLabel" name="label_hors_profil">
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>0</height>
-        </size>
-       </property>
+     <item row="3" column="3">
+      <widget class="QPushButton" name="pushButton_installer">
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
-         <height>20</height>
+         <width>250</width>
+         <height>16777215</height>
         </size>
        </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
        <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="4">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string> : Plugins hors profil</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="5">
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="4" column="0" colspan="6">
-      <widget class="QProgressBar" name="progressBar">
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="6">
-      <widget class="QLabel" name="label_progress">
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <string>Installer les plugins sélectionnés ...</string>
        </property>
       </widget>
      </item>

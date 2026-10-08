@@ -4,14 +4,16 @@ from pathlib import Path
 from qgis.PyQt.QtCore import QUrl
 
 TITRE = "PluginsManager"
-MENU_IGN = "menu IGN"
 # sert à filtrer les plugins IGN des autres
 PREFIXE_PLUGIN_IGN = "IGN "
 
+TAILLE_DLG_SANS_ONGLET = 150
+TAILLE_DLG_AVEC_ONGLET = 400
+
 COLOR_MAJ = "#FFF176"
 # COLOR_COMBO = "#bababa"
-COLOR_NON_INSTALLE = "#ff6e6e"
-COLOR_HORS_PROFIL = "#c8c8c8"
+COLOR_NON_INSTALLE = "#99b9bc"
+COLOR_HORS_PROFIL = "#f2f2f2"
 
 URL_QGIS = "https://plugins.qgis.org"
 REP_PLUGIN_GITHUB = f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
@@ -19,6 +21,7 @@ URL_PLUGINS_GITHUB = f"https://raw.githubusercontent.com/IGNF/collaboratif-plugi
 URL_PROFIL_GITHUB = f"https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/profils.json"
 
 ICON_INSTALL = Path(os.path.dirname(__file__)) / "icons" / "install_plugins.png"
+ICON_NEW = Path(os.path.dirname(__file__)) / "icons" / "new_version.png"
 
 DOSSIER_ONGLET = "config_PluginsManager"
 XML_PLUGINS_COCHE_TOOLBAR = "tabwidget.xml"
@@ -38,20 +41,24 @@ PLUGIN_ICON = "icon"
 # PACKAGES = [PEFILE,DEFUSEDXML]
 # PACKAGES = [PEFILE]
 
-# 0 : bouton "actualiser/sauvegarder"
+# 0 : bouton "enregistrer les modifications"
 # 1 : titre des barres d'outils
 # 2 : tabwidget
+# 3 : titre
+# 4 : Qtablewidget
 CUSTOM_WIDGETS = (
-    "background-color: #21d847; font-weight: bold;",
+    "color:#FFFFFF;background-color: #486554; font-weight: bold;",
 
-    """QLabel {background-color: #a9ffa1;font-weight: bold;border: 2px solid #4CAF50;border-radius: 8px;}
-    QLabel:hover {background-color: #70e070;color: #000000}""",
+    "background-color: #a9ffa1;border: 2px solid #4CAF50;border-radius: 8px;font-weight: bold; ",
 
     """QTabWidget {background-color: #f0f0f0;}
     QTabBar::tab {background: #d0d0d0;padding-left : 10px;margin-right: 5px;border: 1px solid #bbb;}
-    QTabBar::tab:selected {background: #37c62f;color: black;}""",
+    QTabBar::tab:selected {background: #5a7e69;color: #FFFFFF;}""",
 
-    "font-weight: bold"
+"   font-weight: bold;background-color:  #cad0d7;border: 1px solid black;border-radius: 5px;padding: 2px;font-size: 20px;",
+
+    "QHeaderView::section { font-size: 10pt ;font-weight: bold;background-color:  #a0a5ab }",
+
 )
 
 PROGRESS = """
