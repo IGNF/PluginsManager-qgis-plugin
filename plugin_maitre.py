@@ -24,7 +24,7 @@
 
 import os.path
 from qgis.PyQt.QtWidgets import QInputDialog,QAction,QListWidgetItem,QMenu,QListWidget
-from qgis.utils import plugins, loadPlugin
+from qgis.utils import plugins
 
 from .maj import *
 from .dlg_install_plugins import *
@@ -226,7 +226,7 @@ class PluginMaitre:
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
 
     # ==================================================
-    # récupérer la liste de tous les plugins installés
+    # récupérer la liste de tous les plugins IGN installés y compris ceux dans PLUGINS_HORS_IGN
     # parcourt des dossiers des plugins et lecture du metadata.txt pour récupérer le nom du plugin,
     # on les prend tous sauf ceux de la liste EXCEPT_PLUGIN
     # warning : il ne doit pas y avoir d'espace autour du signe "=" dans le metadata.txt
@@ -256,8 +256,10 @@ class PluginMaitre:
                         lien_doc = line.strip().split("=")[1]
                     elif line.startswith("icon="):
                         icon = line.strip().split("=")[1]
-
-            if name not in EXCEPT_PLUGIN:
+            if (name is not None
+                    and name not in EXCEPT_PLUGIN
+                    and (name.startswith(PREFIXE_PLUGIN_IGN)
+                    or name in PLUGINS_HORS_IGN)):
                 dico_plugins_installes[name] = {
                     PLUGIN_VERSION: version,
                     PLUGIN_REP: p.name,
@@ -385,6 +387,17 @@ class PluginMaitre:
                 self.dlgaddonglet.lineEdit_newonglet.clear()
                 return
 
+        # avant de créer un onglet, on teste si au moins un plugin est coché dans le dialogue d'ajout d'onglet
+        plugins_coche = False
+        for i in range(self.dlgaddonglet.listWidget_plugins.count()):
+            item = self.dlgaddonglet.listWidget_plugins.item(i)
+            if item.checkState() == Qt.CheckState.Checked:
+                plugins_coche = True
+                break
+        if not plugins_coche:
+            QMessageBox.warning(self.dlgaddonglet, "Avertissement", "Veuillez sélectionner au moins un plugin pour créer la barre d'outils !")
+            return
+
         listWidget = QListWidget()
         self.add_allpluginIGN_in_widgetlist(listWidget)
         self.dlg.tabWidget.addTab(listWidget, nom_barre)
@@ -411,6 +424,14 @@ class PluginMaitre:
         self.dlgaddonglet.lineEdit_newonglet.clear()
         self.dlgaddonglet.listWidget_plugins.clear()
         self.dlgaddonglet.lineEdit_newonglet.setFocus()
+
+
+        text = "<b>Aucun plugin IGN n'est installé !</b>"
+        text += f"<br><br>Excepté : {PLUGINS_HORS_IGN}"
+        text += f"<br>Ces plugins ne peuvent pas être intégrés dans une barre d'outils."
+        if len(self.plugins_installes()) == 0 + len(PLUGINS_HORS_IGN):
+            QMessageBox.warning(self.dlgaddonglet,"Avertissement",text)
+            return
 
         for plugin in self.plugins_installes():
             if PREFIXE_PLUGIN_IGN in plugin:
@@ -507,7 +528,7 @@ class PluginMaitre:
             self.dlgaddonglet = QDialog()
             ui_file = Path(__file__).parent / "ui" / "add_onglet.ui"
             loadUi(ui_file, self.dlgaddonglet)
-            self.dlgaddonglet.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowCloseButtonHint)
+            self.dlgaddonglet.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
             self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
             self.dlgaddonglet.pushButton_addonglet.setStyleSheet(CUSTOM_WIDGETS[0])
 

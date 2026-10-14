@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
 
-from qgis.PyQt.QtCore import QUrl
-
 TITRE = "PluginsManager"
 # sert à filtrer les plugins IGN des autres
 PREFIXE_PLUGIN_IGN = "IGN "

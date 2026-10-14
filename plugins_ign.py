@@ -2,7 +2,7 @@ import zipfile
 from html import unescape
 from xml.etree import ElementTree as ET # nosec B405
 
-from qgis.PyQt.QtCore import QEventLoop
+from qgis.PyQt.QtCore import QEventLoop,QUrl
 from qgis.PyQt.QtNetwork import QNetworkRequest,QNetworkReply
 from qgis.core import Qgis,QgsNetworkAccessManager
 

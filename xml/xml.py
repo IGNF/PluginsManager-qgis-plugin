@@ -44,7 +44,6 @@ def get_plugins_from_onglet_xml(path_xml, onglet):
 # ==================================================
 # ajout onglet et plugins cochés dans le xml
 def add_onglet_from_XML(path_xml,nom):
-    print("add_onglet_from_XML")
     # charge le XML existant
     tree = ET.parse(path_xml)
     root = tree.getroot()
@@ -79,7 +78,6 @@ def suppr_all_plugins_from_onglet(path_xml, onglet):
 # ==================================================
 # re-initialise : tabwidget_xml
 def clean_tabwidget_xml(path_xml,plugins_installes):
-    print("clean_tabwidget_xml")
     tree = ET.parse(path_xml)
     root = tree.getroot()
     for onglet in root.findall("onglet"):
@@ -92,7 +90,6 @@ def clean_tabwidget_xml(path_xml,plugins_installes):
 # ==================================================
 # écriture du xml avec tous les plugins cochés en fonction de l'onglet
 def ecrire_plugin_coche_toXML(path_xml,onglet,list_plugin_coche):
-    print("ecrire_plugin_coche_toXML")
     tree = ET.parse(path_xml)
     root = tree.getroot()
     ongletXml = root.find(f".//onglet[@id='{onglet}']")
