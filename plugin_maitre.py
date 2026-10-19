@@ -26,7 +26,7 @@ import os.path
 from qgis.PyQt.QtWidgets import QInputDialog,QAction,QListWidgetItem,QMenu,QListWidget
 from qgis.utils import plugins
 
-from .maj import *
+from .ui.maj_dlg import *
 from .dlg_install_plugins import *
 from .xml.xml import *
 
@@ -51,7 +51,7 @@ class PluginMaitre:
         self.menu = QMenu(self.iface.mainWindow())
         self.menu.setObjectName("IGN")
         self.menu.setTitle("IGN")
-        self.menu_requete = None
+        # self.menu_requete = None
         self.menu_config = None
 
         # liste des onglets
@@ -66,10 +66,6 @@ class PluginMaitre:
 
         self.add_plugin_in_toolbars()
         self.init_menuIGN()
-
-        # Check if plugin was started the first time in current QGIS session
-        # Must be set in initGui() to survive plugin reloads
-        self.first_start = True
 
     # creation du menu IGN
     def init_menuIGN(self):
@@ -503,7 +499,6 @@ class PluginMaitre:
             self.maj.init_dial_maj()
             self.maj.show_dial_maj_plugins(list_plugins_to_install)
 
-        self.first_start = True
 
     def unload(self):
         self.suppr_all_toolbar()
@@ -511,80 +506,73 @@ class PluginMaitre:
 
     # ==================================================
     def run(self):
+        self.dlg = QDialog()
+        ui_file = Path(__file__).parent / "ui" / "plugin_maitre_dialog_base.ui"
+        loadUi(ui_file, self.dlg)
 
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start:
-            self.first_start = False
-            self.dlg = QDialog()
-            ui_file = Path(__file__).parent / "ui" / "plugin_maitre_dialog_base.ui"
-            loadUi(ui_file, self.dlg)
+        self.dlg.setWindowTitle(f"{TITRE}")
+        self.dlg.setParent(self.iface.mainWindow())
+        self.dlg.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
 
-            self.dlg.setWindowTitle(f"{TITRE}")
-            self.dlg.setParent(self.iface.mainWindow())
-            self.dlg.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
+        # dial d'ajout d'onglet
+        self.dlgaddonglet = QDialog()
+        ui_file = Path(__file__).parent / "ui" / "add_onglet.ui"
+        loadUi(ui_file, self.dlgaddonglet)
+        self.dlgaddonglet.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
+        self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
+        self.dlgaddonglet.pushButton_addonglet.setStyleSheet(CUSTOM_WIDGETS[0])
 
-            # dial d'ajout d'onglet
-            self.dlgaddonglet = QDialog()
-            ui_file = Path(__file__).parent / "ui" / "add_onglet.ui"
-            loadUi(ui_file, self.dlgaddonglet)
-            self.dlgaddonglet.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowCloseButtonHint)
-            self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
-            self.dlgaddonglet.pushButton_addonglet.setStyleSheet(CUSTOM_WIDGETS[0])
+        # bouton actualiser la toolbar
+        self.dlg.pushButtonActualiser.clicked.connect(self.actualiser)
+        self.dlg.pushButtonActualiser.setStyleSheet(CUSTOM_WIDGETS[0])
+        # ajouter une toolbar
+        self.dlg.pushButtonAddBarre.clicked.connect(self.show_dial_add_onglet)
+        # bouton renommer
+        self.dlg.pushButton_renommer.clicked.connect(self.renomme_onglet)
+        # Connecter le signal 'tabRemoved' à un slot
+        self.dlg.tabWidget.tabCloseRequested.connect(self.supp_onglet)
 
-            # bouton actualiser la toolbar
-            self.dlg.pushButtonActualiser.clicked.connect(self.actualiser)
-            self.dlg.pushButtonActualiser.setStyleSheet(CUSTOM_WIDGETS[0])
-            # ajouter une toolbar
-            self.dlg.pushButtonAddBarre.clicked.connect(self.show_dial_add_onglet)
-            # bouton renommer
-            self.dlg.pushButton_renommer.clicked.connect(self.renomme_onglet)
-            # Connecter le signal 'tabRemoved' à un slot
-            self.dlg.tabWidget.tabCloseRequested.connect(self.supp_onglet)
+        self.dlg.label_titre.setStyleSheet(CUSTOM_WIDGETS[3])
+        self.dlg.pushButtonAddBarre.setStyleSheet("font-weight: bold;")
+        self.dlg.pushButton_renommer.setStyleSheet("font-weight: bold;")
 
-            self.dlg.label_titre.setStyleSheet(CUSTOM_WIDGETS[3])
-            self.dlg.pushButtonAddBarre.setStyleSheet("font-weight: bold;")
-            self.dlg.pushButton_renommer.setStyleSheet("font-weight: bold;")
+        # suppr des onglets
+        self.dlg.tabWidget.clear()
 
-            # suppr des onglets
-            self.dlg.tabWidget.clear()
+        # apparence du tabwidget
+        self.dlg.tabWidget.setStyleSheet(CUSTOM_WIDGETS[2])
 
-            # apparence du tabwidget
-            self.dlg.tabWidget.setStyleSheet(CUSTOM_WIDGETS[2])
+        # recuperation de tous les onglets du xml
+        onglets = get_onglet_fromXML(self.path_xml)
+        # initialisation des onglets du tabwidget
+        for onglet in onglets:
+            listWidget = QListWidget()
+            self.add_allpluginIGN_in_widgetlist(listWidget)
+            self.dlg.tabWidget.addTab(listWidget, onglet)
+            self.list_onglet.append(onglet)
 
-            # recuperation de tous les onglets du xml
-            onglets = get_onglet_fromXML(self.path_xml)
-            # initialisation des onglets du tabwidget
-            for onglet in onglets:
-                listWidget = QListWidget()
-                self.add_allpluginIGN_in_widgetlist(listWidget)
-                self.dlg.tabWidget.addTab(listWidget, onglet)
-                self.list_onglet.append(onglet)
+        # recuperation du nombre d'onglets dans le tabwidget
+        nb_onglet = self.dlg.tabWidget.count()
+        # si pas d'onglet, on masque le bouton "renommer".
+        if nb_onglet == 0:
+            self.dlg.setFixedHeight(TAILLE_DLG_SANS_ONGLET)
+            self.dlg.pushButton_renommer.hide()
+            self.dlg.pushButtonActualiser.hide()
+        else:
+            self.dlg.pushButton_renommer.show()
+            self.dlg.pushButtonActualiser.show()
+            self.dlg.setFixedHeight(TAILLE_DLG_AVEC_ONGLET)
 
-            # recuperation du nombre d'onglets dans le tabwidget
-            nb_onglet = self.dlg.tabWidget.count()
-            # si pas d'onglet, on masque le bouton "renommer".
-            if nb_onglet == 0:
-                self.dlg.setFixedHeight(TAILLE_DLG_SANS_ONGLET)
-                self.dlg.pushButton_renommer.hide()
-                self.dlg.pushButtonActualiser.hide()
-            else:
-                self.dlg.pushButton_renommer.show()
-                self.dlg.pushButtonActualiser.show()
-                self.dlg.setFixedHeight(TAILLE_DLG_AVEC_ONGLET)
-
-            # # initialisation des plugins cochés pour chaque barre d'outils dans le tabwidget
-            self.init_plugins_coche_in_toolbar()
+        # # initialisation des plugins cochés pour chaque barre d'outils dans le tabwidget
+        self.init_plugins_coche_in_toolbar()
 
 
-            self.add_plugin_in_toolbars()
-            self.init_menuIGN()
+        self.add_plugin_in_toolbars()
+        self.init_menuIGN()
 
-            # récupérer info de localisation basé sur ip
-            # info = get_localisation_ip()
-            # print(info)
+        # récupérer info de localisation basé sur ip
+        # info = get_localisation_ip()
+        # print(info)
 
-            self.dlg.exec()
-
-            self.first_start = True
+        self.dlg.exec()
 

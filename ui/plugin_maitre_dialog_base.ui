@@ -44,7 +44,6 @@
          </property>
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -58,16 +57,16 @@
      <item row="2" column="0" colspan="3">
       <widget class="QTabWidget" name="tabWidget">
        <property name="tabPosition">
-        <enum>QTabWidget::North</enum>
+        <enum>QTabWidget::TabPosition::North</enum>
        </property>
        <property name="tabShape">
-        <enum>QTabWidget::Rounded</enum>
+        <enum>QTabWidget::TabShape::Rounded</enum>
        </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
        <property name="elideMode">
-        <enum>Qt::ElideLeft</enum>
+        <enum>Qt::TextElideMode::ElideLeft</enum>
        </property>
        <property name="usesScrollButtons">
         <bool>true</bool>
@@ -100,7 +99,6 @@
       <widget class="QPushButton" name="pushButton_renommer">
        <property name="font">
         <font>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -113,7 +111,6 @@
       <widget class="QPushButton" name="pushButtonAddBarre">
        <property name="font">
         <font>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -139,7 +136,6 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
-         <weight>50</weight>
          <bold>false</bold>
         </font>
        </property>

@@ -1,27 +1,27 @@
 from qgis.core import QgsApplication
 
-from .dlg_install_plugins import *
-from .constantes import *
+from ..dlg_install_plugins import *
+from ..constantes import *
 
 class MajPlugins:
     def __init__(self,iface,installer):
         self.dlgMaj = None
-        self.package_manquants = [] # liste de couples (nom complet, nom simplifié)
+        # self.package_manquants = [] # liste de couples (nom complet, nom simplifié)
         self.iface = iface
         self.installer = installer
-        self.plugins_xml = None
-        self.prefix = None
-        self.path_xml_local = None
-        self.current_dir = os.path.dirname(__file__)
-        self.parent_dir = os.path.dirname(self.current_dir)
+        # self.plugins_xml = None
+        # self.prefix = None
+        # self.path_xml_local = None
+        # self.current_dir = os.path.dirname(__file__)
+        # self.parent_dir = os.path.dirname(self.current_dir)
 
-        prefix = Path(QgsApplication.prefixPath())
-        install_root = prefix.parent.parent
-        self.osgeo_bat = install_root / "OSGeo4W.bat"
+        # prefix = Path(QgsApplication.prefixPath())
+        # install_root = prefix.parent.parent
+        # self.osgeo_bat = install_root / "OSGeo4W.bat"
 
     def init_dial_maj(self):
         self.dlgMaj = QDialog()
-        ui_file = Path(__file__).parent / "ui" / "maj.ui"
+        ui_file = Path(__file__).parent / "maj.ui"
         loadUi(str(ui_file), self.dlgMaj)
         icon_path = Path(__file__).parent /"icons"/ "icon.png"
         self.dlgMaj.setWindowIcon(QIcon(str(icon_path)))
