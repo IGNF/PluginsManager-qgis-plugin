@@ -3,6 +3,7 @@ import urllib.request
 import urllib.error
 import json
 
+from qgis.PyQt.QtGui import QFont
 from qgis.PyQt.uic import loadUi
 from qgis.PyQt.QtWidgets import QMessageBox,QDialog
 from qgis.PyQt.QtCore import Qt
@@ -66,6 +67,7 @@ def apropos(self):
     dlgAProposDe = QDialog()
     ui_file = Path(__file__).parent / "ui" / "aproposde.ui"
     loadUi(ui_file, dlgAProposDe)
+    dlgAProposDe.label_suivi_version.setFont(QFont("Arial", 11, QFont.Weight.Bold))
     dlgAProposDe.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint)
     dlgAProposDe.setWindowTitle(f"{TITRE}")
     dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)

@@ -164,18 +164,17 @@ p, li { white-space: pre-wrap; }
      <x>120</x>
      <y>10</y>
      <width>261</width>
-     <height>59</height>
+     <height>73</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="label_suivi_version">
       <property name="font">
        <font>
         <pointsize>11</pointsize>
         <weight>75</weight>
         <bold>true</bold>
-        <underline>true</underline>
        </font>
       </property>
       <property name="text">
