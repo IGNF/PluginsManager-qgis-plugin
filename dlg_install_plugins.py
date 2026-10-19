@@ -332,6 +332,8 @@ class InstallerDialog(QDialog):
                     item_name.flags()
                     & ~Qt.ItemFlag.ItemIsUserCheckable
                 )
+                # masquer la case à cocher pour ces plugins(hors profil) car non installables
+                item_name.setData(Qt.ItemDataRole.CheckStateRole, None)
                 # Version disponible
                 if is_new_version:
                     # Le widget remplace le QTableWidgetItem
@@ -465,6 +467,7 @@ class InstallerDialog(QDialog):
             pass
         return item
 
+    # creation d'un widget avec un label ET une icône pour signaler qu'une nouvelle version est disponible
     def creer_item_new_version(self,texte):
         label_text = QLabel(texte)
         label_version = QLabel()
