@@ -3,8 +3,6 @@ import urllib.request
 import urllib.error
 import json
 
-from qgis.PyQt.QtGui import QFont
-from qgis.PyQt.uic import loadUi
 from qgis.PyQt.QtWidgets import QMessageBox,QDialog
 from qgis.PyQt.QtCore import Qt
 from .constantes import *
@@ -21,6 +19,9 @@ def log(message,reset=False):
     mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
     with open(fichier, mode, encoding="utf-8") as f:
         f.write(f"{message}\n")
+
+def affiche_doc_pluginsmanager(self):
+    webbrowser.open("https://ignf.github.io/PluginsManager-qgis-plugin/")
 
 def affiche_doc(lien_doc):
     if not lien_doc or not lien_doc.startswith("https://"):
@@ -57,21 +58,6 @@ def affichemessageAvertissement( titre, text):
         return True
     return None
 
-def afficheDoc():
-    webbrowser.open("https://ignf.github.io/PluginsManager-qgis-plugin/")
-
-
-# ==================================================
-# ouverture du dialogue "à propos de..."
-def apropos(self):
-    dlgAProposDe = QDialog()
-    ui_file = Path(__file__).parent / "ui" / "aproposde.ui"
-    loadUi(ui_file, dlgAProposDe)
-    dlgAProposDe.label_suivi_version.setFont(QFont("Arial", 11, QFont.Weight.Bold))
-    dlgAProposDe.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint)
-    dlgAProposDe.setWindowTitle(f"{TITRE}")
-    dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
-    dlgAProposDe.exec()
 
 def get_localisation_ip():
     # Active les proxies système (PAC/WPAD)

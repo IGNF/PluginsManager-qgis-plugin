@@ -1,6 +1,7 @@
 import shutil
 
-from qgis.PyQt.QtCore import QSize,QUrl
+from qgis.PyQt.uic import loadUi
+from qgis.PyQt.QtCore import QSize
 from qgis.PyQt.QtGui import QFont,QBrush, QColor,QIcon,QPixmap
 from qgis.PyQt.QtWidgets import QAbstractItemView,QTableWidgetItem,QHeaderView,QHBoxLayout,QLabel,QWidget
 

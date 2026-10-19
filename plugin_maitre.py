@@ -24,9 +24,11 @@
 
 import os.path
 from qgis.PyQt.QtWidgets import QInputDialog,QAction,QListWidgetItem,QMenu,QListWidget
+from qgis.core import QgsApplication
 from qgis.utils import plugins
 
-from .ui.maj_dlg import *
+from .ui.dlg_aproposde import DlgAProposDe
+from .ui.dlg_maj import *
 from .dlg_install_plugins import *
 from .xml.xml import *
 
@@ -136,13 +138,13 @@ class PluginMaitre:
         # ************************************************************************
         # A propos de
         action = QAction( "A propos de ...", self.iface.mainWindow())
-        action.triggered.connect(apropos)
+        action.triggered.connect(self.on_show_doc_pluginsmanager)
         self.menu.addAction(action)
 
         # ************************************************************************
         # Documentation du PluginsManager
         action = QAction( "Documentation", self.iface.mainWindow())
-        action.triggered.connect(afficheDoc)
+        action.triggered.connect(affiche_doc_pluginsmanager)
         self.menu.addAction(action)
 
         # *********************************************
@@ -198,6 +200,10 @@ class PluginMaitre:
                 startPlugin(plugin.name)
             except Exception as e:
                 print(repr(e))
+
+    def on_show_doc_pluginsmanager(self):
+        dlg = DlgAProposDe()
+        dlg.exec()
 
     # ==================================================
     # installation des plugins IGN
