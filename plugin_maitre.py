@@ -87,7 +87,7 @@ class PluginMaitre:
         # ************************************************************************
         # Configuration
         icon_path = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
-        action = QAction(QIcon(str(icon_path)),"Configuration",self.iface.mainWindow())
+        action = QAction(QIcon(str(icon_path)),"Configuration des barres d'outils",self.iface.mainWindow())
         action.triggered.connect(self.run)
         self.menu.addAction(action)
 

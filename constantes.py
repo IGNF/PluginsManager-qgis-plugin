@@ -53,7 +53,7 @@ CUSTOM_WIDGETS = (
     QTabBar::tab {background: #d0d0d0;padding-left : 10px;margin-right: 5px;border: 1px solid #bbb;}
     QTabBar::tab:selected {background: #5a7e69;color: #FFFFFF;}""",
 
-"   font-weight: bold;background-color:  #cad0d7;border: 1px solid black;border-radius: 5px;padding: 2px;font-size: 20px;",
+"   font-weight: bold;background-color:  #cad0d7;border: 1px solid black;border-radius: 5px;padding: 2px;font-size: 16px;",
 
     "QHeaderView::section { font-size: 10pt ;font-weight: bold;background-color:  #a0a5ab }",
 

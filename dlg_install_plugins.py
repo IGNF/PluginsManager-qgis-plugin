@@ -35,7 +35,6 @@ class InstallerDialog(QDialog):
         self.comboBox_profils.currentIndexChanged.connect(self.on_profil_changed)
 
     def init_aspect_dialog(self):
-
         self.tablePlugins.verticalHeader().setVisible(False) # masque les numéros des lignes
         self.tablePlugins.clear()
         self.tablePlugins.setRowCount(0)
@@ -48,7 +47,6 @@ class InstallerDialog(QDialog):
 
         self.tablePlugins.setColumnCount(5)
         self.tablePlugins.setHorizontalHeaderLabels(["Plugins disponibles","Description", "Version\ndisponible","Version\ninstallée","Dépôt\nde téléchargement" ])
-
 
         self.tablePlugins.setColumnWidth(0, 220)
         # self.tablePlugins.setColumnWidth(1, 150)
@@ -78,134 +76,12 @@ class InstallerDialog(QDialog):
         }
         """)
 
-
-    # def remplir_dlg_plugins(self):
-    #     self.tablePlugins.setUpdatesEnabled(False)
-    #     self.tablePlugins.setSortingEnabled(False)
-    #     # Plugins appartenant au profil actif
-    #     list_plugins_profil = set(self.get_plugins_profil())
-    #
-    #     nb_plugins = sum(
-    #         len(self.pluginsIGN.get_plugins_ign_from_depot(depot))
-    #         for depot in ("officiel", "github")
-    #     )
-    #     progress = DownloadProgress(parent=self,progress_bar=None,total=nb_plugins,label=None)
-    #     progress.setTitre("Initialisation...")
-    #
-    #     plugins = []
-    #     for depot in ("officiel", "github"):
-    #         for name, infos in self.pluginsIGN.get_plugins_ign_from_depot(depot).items():
-    #             plugins.append((name, infos, depot))
-    #     # tri : plugins du profil actif en premier, puis plugins hors profil par ordre alphabétique
-    #     plugins_tries = sorted(
-    #         plugins,
-    #         key=lambda x: (
-    #             x[0] not in list_plugins_profil,x[0].lower()
-    #         )
-    #     )
-    #     titre_hors_profil_ajoute = False
-    #     compt = 0
-    #     for name, infos,depot in plugins_tries:
-    #         compt +=1
-    #         progress.setValue(compt, f"{name}")
-    #         version = infos["version"]
-    #         description = infos["description"]
-    #         icon = infos["icon"]
-    #         # test du nom avec get(name) pour éviter l'erreur si le plugin n'est pas installé (nom absent de la liste des plugins installés)
-    #         if self.plugin_maitre.plugins_installes().get(name) is None:
-    #             version_installe = None
-    #         else:
-    #             version_installe = self.plugin_maitre.plugins_installes().get(name)[PLUGIN_VERSION]
-    #
-    #         ligne = self.tablePlugins.rowCount()
-    #         self.tablePlugins.insertRow(ligne)
-    #
-    #         # NOM DU PLUGIN
-    #         if version_installe != version:
-    #             check = "True"
-    #         else:
-    #             check = "False"
-    #         item_name = self.creer_item(name,check)
-    #         item_name.setData(Qt.ItemDataRole.UserRole, infos)  # stocke le dictionnaire complet (name, url, version...) dans l'item
-    #
-    #         # DEPOT
-    #         nom_depot = ""
-    #         url_icon = ""
-    #         if depot == "officiel":
-    #             nom_depot = "Dépôt officiel (qgis.org)"
-    #             url_icon = f"{URL_QGIS}{icon}"
-    #         elif depot == "github":
-    #             nom_depot = "GitHub"
-    #             url_icon = icon
-    #         item_depot = self.creer_item(nom_depot)
-    #
-    #         # ICON
-    #         icon_bytes = self.pluginsIGN.load_fichier(url_icon)
-    #         pixmap = QPixmap()
-    #         pixmap.loadFromData(icon_bytes)
-    #         item_name.setIcon(QIcon(pixmap))
-    #
-    #         # VERSION DISPONIBLE
-    #         is_new_version = version_installe != version
-    #         # item_version_dispo = self.creer_item(version,is_new_version = is_new_version)
-    #         if is_new_version:
-    #             widget_version_dispo = self.creer_item_new_version(version)
-    #         else:
-    #             item_version_dispo = self.creer_item(version)
-    #
-    #         # VERSION INSTALLÉE
-    #         item_version_installe = self.creer_item(version_installe)
-    #
-    #         # DESCRIPTION
-    #         item_descr = self.creer_item(description)
-    #
-    #         # si le plugin n'est pas dans la liste des plugins du profil actif, on le grise
-    #         if name not in list_plugins_profil and not titre_hors_profil_ajoute:
-    #             print(f"Plugin hors profil : {name}")
-    #             self.creer_ligne_titre("Plugins hors profil")
-    #             item_name.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-    #             item_name.setCheckState(Qt.CheckState.Unchecked)
-    #             item_name.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
-    #
-    #             item_version_dispo.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-    #             item_version_dispo.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
-    #             item_version_installe.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-    #             item_version_installe.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
-    #             item_depot.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-    #             item_depot.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
-    #             item_descr.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-    #             item_descr.setFlags(item_name.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
-    #
-    #             # formatage pour retrouver les dossiers de la forme "IGN_"
-    #             if self.plugin_maitre.plugins_installes().get(name) is not None:
-    #                 self._plugin_to_suppr.append(Path(self.parent_directory, self.plugin_maitre.plugins_installes().get(name)[PLUGIN_REP]))
-    #
-    #             titre_hors_profil_ajoute = True
-    #
-    #         self.tablePlugins.setItem(ligne, 0, item_name)
-    #         self.tablePlugins.setItem(ligne, 1, item_descr)
-    #         if is_new_version:
-    #             self.tablePlugins.setCellWidget(ligne, 2, widget_version_dispo)
-    #         else:
-    #             self.tablePlugins.setItem(ligne, 2, item_version_dispo)
-    #         self.tablePlugins.setItem(ligne, 3, item_version_installe)
-    #         self.tablePlugins.setItem(ligne, 4, item_depot)
-    #
-    #
-    #     progress.setClose()
-    #     # rafraichir l'affichage du tableau qu'a la fin du remplissage pour éviter les ralentissements
-    #     self.tablePlugins.setUpdatesEnabled(True)
-    #     # self.tablePlugins.setSortingEnabled(True)
-    #     # self.tablePlugins.sortItems(0, Qt.SortOrder.AscendingOrder)
-
     def remplir_dlg_plugins(self):
         self.tablePlugins.setUpdatesEnabled(False)
         self.tablePlugins.setSortingEnabled(False)
 
         # Plugins appartenant au profil actif
         list_plugins_profil = set(self.get_plugins_profil())
-
-
         nb_plugins = sum(
             len(self.pluginsIGN.get_plugins_ign_from_depot(depot))
             for depot in ("officiel", "github")
@@ -217,7 +93,7 @@ class InstallerDialog(QDialog):
             total=nb_plugins,
             label=None
         )
-        progress.setTitre("Initialisation...")
+        progress.setTitre("Récupération des informations sur les plugins IGN")
 
         plugins = []
         for depot in ("officiel", "github"):
@@ -247,7 +123,7 @@ class InstallerDialog(QDialog):
                 titre_hors_profil_ajoute = True
 
             compt += 1
-            progress.setValue(compt, f"{name}")
+            progress.setValue(compt)
 
             version = infos["version"]
             description = infos["description"]
@@ -341,28 +217,15 @@ class InstallerDialog(QDialog):
                     widget_version_dispo.setStyleSheet(f"background-color: {COLOR_HORS_PROFIL};")
                 else:
                     item_version_dispo.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                    # item_version_dispo.setFlags(
-                    #     item_version_dispo.flags()
-                    #     & ~Qt.ItemFlag.ItemIsUserCheckable
-                    #     & ~Qt.ItemFlag.ItemIsEnabled
-                    # )
+
                 # Version installée
                 item_version_installe.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                # item_version_installe.setFlags(
-                #     item_version_installe.flags()
-                #     & ~Qt.ItemFlag.ItemIsUserCheckable
-                #     & ~Qt.ItemFlag.ItemIsEnabled)
 
                 # Dépôt
                 item_depot.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                # item_depot.setFlags(item_depot.flags() & ~Qt.ItemFlag.ItemIsUserCheckable & ~Qt.ItemFlag.ItemIsEnabled)
                 # Description
                 item_descr.setBackground(QBrush(QColor(COLOR_HORS_PROFIL)))
-                # item_descr.setFlags(
-                #     item_descr.flags()
-                #     & ~Qt.ItemFlag.ItemIsUserCheckable
-                #     & ~Qt.ItemFlag.ItemIsEnabled
-                # )
+
                 # Plugin installé, mais hors profil -> à supprimer si l'option est cochée:
                 if plugin_installe is not None:
                     self._plugin_to_suppr.append(Path(self.parent_directory,plugin_installe[PLUGIN_REP]))
@@ -410,8 +273,6 @@ class InstallerDialog(QDialog):
         with open(PATH_PROFIL_ACTIF,"w",encoding="utf-8") as f:
             json.dump( self.profil_actif, f, indent=4, ensure_ascii=False)
 
-
-
         self.tablePlugins.clearContents()
         self.tablePlugins.setRowCount(0)
         self.remplir_dlg_plugins()
@@ -430,7 +291,6 @@ class InstallerDialog(QDialog):
             list_plugins.append(plugin.attrib.get("name"))
         return list_plugins
 
-
     def load_profil_actif(self):
         if os.path.exists(PATH_PROFIL_ACTIF):
             with open(PATH_PROFIL_ACTIF, "r", encoding="utf-8") as f:
@@ -446,7 +306,6 @@ class InstallerDialog(QDialog):
         self.comboBox_profils.blockSignals(True)
         self.comboBox_profils.setCurrentText(self.profil_actif['nom'])
         self.comboBox_profils.blockSignals(False)
-
 
     def creer_item(self,texte,check = ""):
         font = QFont()
@@ -525,7 +384,6 @@ class InstallerDialog(QDialog):
                 plugins_checked.append(plugin)
         return plugins_checked
 
-
     def on_installe_plugin(self):
         # ==========================================
         # PLUGINS à SUPPRIMER (grisés) : on vérifie si le plugin existe encore avant de le supprimer
@@ -538,7 +396,6 @@ class InstallerDialog(QDialog):
         self._plugin_to_suppr = plugins_a_supprimer
 
         # ==========================================
-
 
         # =================================================
         # PLUGINS à INSTALLER (cochés) : on vérifie si le plugin est déjà installé et si la version est identique
@@ -599,7 +456,6 @@ class InstallerDialog(QDialog):
 
         self.plugin_maitre.refresh_plugins()  # met à jour QGIS
         self.remplir_dlg_plugins()
-
 
         self.plugin_maitre.active_plugins(rep_plugins_installe)  # active les plugins IGN installés
 
