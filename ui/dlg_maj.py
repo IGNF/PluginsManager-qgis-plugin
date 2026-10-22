@@ -1,27 +1,27 @@
-from qgis.core import QgsApplication
+from qgis.PyQt.QtWidgets import QListWidgetItem
 
-from .dlg_install_plugins import *
-from .constantes import *
+from ..dlg_install_plugins import *
+from ..constantes import *
 
 class MajPlugins:
     def __init__(self,iface,installer):
         self.dlgMaj = None
-        self.package_manquants = [] # liste de couples (nom complet, nom simplifié)
+        # self.package_manquants = [] # liste de couples (nom complet, nom simplifié)
         self.iface = iface
         self.installer = installer
-        self.plugins_xml = None
-        self.prefix = None
-        self.path_xml_local = None
-        self.current_dir = os.path.dirname(__file__)
-        self.parent_dir = os.path.dirname(self.current_dir)
+        # self.plugins_xml = None
+        # self.prefix = None
+        # self.path_xml_local = None
+        # self.current_dir = os.path.dirname(__file__)
+        # self.parent_dir = os.path.dirname(self.current_dir)
 
-        prefix = Path(QgsApplication.prefixPath())
-        install_root = prefix.parent.parent
-        self.osgeo_bat = install_root / "OSGeo4W.bat"
+        # prefix = Path(QgsApplication.prefixPath())
+        # install_root = prefix.parent.parent
+        # self.osgeo_bat = install_root / "OSGeo4W.bat"
 
     def init_dial_maj(self):
         self.dlgMaj = QDialog()
-        ui_file = Path(__file__).parent / "ui" / "maj.ui"
+        ui_file = Path(__file__).parent / "maj.ui"
         loadUi(str(ui_file), self.dlgMaj)
         icon_path = Path(__file__).parent /"icons"/ "icon.png"
         self.dlgMaj.setWindowIcon(QIcon(str(icon_path)))
@@ -31,7 +31,7 @@ class MajPlugins:
         self.dlgMaj.tableWidget_maj.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.dlgMaj.tableWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.dlgMaj.tableWidget_maj.setColumnCount(2)
-        self.dlgMaj.tableWidget_maj.setHorizontalHeaderLabels(["Plugin", "Version"])
+        self.dlgMaj.tableWidget_maj.setHorizontalHeaderLabels(["Plugin", "Version disponible"])
         self.dlgMaj.tableWidget_maj.setShowGrid(False)
         self.dlgMaj.tableWidget_maj.verticalHeader().setDefaultSectionSize(15)
 
@@ -52,12 +52,15 @@ class MajPlugins:
         is_maj = False
         for nom, info in dico_plugins.items():
             version_local = self.installer.plugin_maitre.plugins_installes().get(nom, {}).get(PLUGIN_VERSION)
+            item_nom = QTableWidgetItem(nom)
+            item_nom.setFlags(Qt.ItemFlag.ItemIsEnabled)
             if version_local != info["version"]:
                 self.dlgMaj.tableWidget_maj.insertRow(0)
                 item_version = QTableWidgetItem(info["version"])
+                item_version.setFlags(Qt.ItemFlag.ItemIsEnabled)
                 item_version.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.dlgMaj.tableWidget_maj.setItem(0, 0, QTableWidgetItem(nom))
-                self.dlgMaj.tableWidget_maj.setItem(0, 1, QTableWidgetItem(item_version))
+                self.dlgMaj.tableWidget_maj.setItem(0, 0, item_nom)
+                self.dlgMaj.tableWidget_maj.setItem(0, 1, item_version)
                 is_maj = True
         if is_maj:
             self.dlgMaj.tableWidget_maj.resizeColumnsToContents()
