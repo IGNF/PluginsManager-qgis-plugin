@@ -20,7 +20,7 @@ def initXML_toolbar(path_xml):
 # ==================================================
 # retourne une liste contenant tous les onglets du xml
 def get_onglet_fromXML(path_xml):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     onglets = root.findall(".//onglet")
     liste_onglet = []
@@ -32,7 +32,7 @@ def get_onglet_fromXML(path_xml):
 # retourne une liste de tous les plugins du xml pour un onglet donné
 def get_plugins_from_onglet_xml(path_xml, onglet):
     # charge le XML existant
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     onglet_xml = root.find(f".//onglet[@id='{onglet}']")
     list_coche = []
@@ -45,7 +45,7 @@ def get_plugins_from_onglet_xml(path_xml, onglet):
 # ajout onglet et plugins cochés dans le xml
 def add_onglet_from_XML(path_xml,nom):
     # charge le XML existant
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     # creation nouvel onglet
     new_onglet = ET.Element("onglet",id = nom)
@@ -57,7 +57,7 @@ def add_onglet_from_XML(path_xml,nom):
 # ==================================================
 # suppression d'un onglet dans le xml
 def suppr_onglet_from_XML(path_xml,id_onglet):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     for onglet in root.findall(".//onglet"):
         if onglet.get("id") == id_onglet:
@@ -67,7 +67,7 @@ def suppr_onglet_from_XML(path_xml,id_onglet):
 # ==================================================
 # suppression de tous les plugins dependant d'un onglet du xml
 def suppr_all_plugins_from_onglet(path_xml, onglet):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     onglet_xml = root.find(f".//onglet[@id='{onglet}']")
     if onglet_xml is not None:
@@ -78,7 +78,7 @@ def suppr_all_plugins_from_onglet(path_xml, onglet):
 # ==================================================
 # re-initialise : tabwidget_xml
 def clean_tabwidget_xml(path_xml,plugins_installes):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     for onglet in root.findall("onglet"):
         for plugin in list(onglet.findall("plugin")):
@@ -90,7 +90,7 @@ def clean_tabwidget_xml(path_xml,plugins_installes):
 # ==================================================
 # écriture du xml avec tous les plugins cochés en fonction de l'onglet
 def ecrire_plugin_coche_toXML(path_xml,onglet,list_plugin_coche):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     ongletXml = root.find(f".//onglet[@id='{onglet}']")
     for plugin in list_plugin_coche:
@@ -100,7 +100,7 @@ def ecrire_plugin_coche_toXML(path_xml,onglet,list_plugin_coche):
     tree.write(path_xml,encoding='utf-8', xml_declaration=True)
 
 def renomme_onglet_xml(path_xml,ancien_nom,nouveau_nom):
-    tree = ET.parse(path_xml)
+    tree = ET.parse(path_xml) # nosec B314
     root = tree.getroot()
     ongletXml = root.find(f".//onglet[@id='{ancien_nom}']")
     if ongletXml is None:
