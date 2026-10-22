@@ -59,32 +59,3 @@ def affichemessageAvertissement( titre, text):
     return None
 
 
-def get_localisation_ip():
-    # Active les proxies système (PAC/WPAD)
-    proxies = urllib.request.getproxies()
-
-    proxy_handler = urllib.request.ProxyHandler(proxies)
-    opener = urllib.request.build_opener(proxy_handler)
-    urllib.request.install_opener(opener)
-
-    try:
-        req = urllib.request.Request(
-            "https://ipinfo.io/json",
-            headers={"User-Agent": "Mozilla/5.0"}
-        )
-        with urllib.request.urlopen(req, timeout=5) as response:
-            data = json.loads(response.read().decode("utf-8"))
-
-        return {
-            "ip": data.get("ip"),
-            "pays": data.get("country"),
-            "region": data.get("region"),
-            "ville": data.get("city"),
-            "organisation": data.get("org"),
-        }
-
-    except Exception as e:
-        print(f"Erreur géolocalisation IP : {e}")
-        return None
-
-
